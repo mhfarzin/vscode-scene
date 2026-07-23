@@ -12,16 +12,14 @@ export function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    // Register command to show the screensaver in the explorer sidebar
+    // Register command to show the screensaver
     const startCommand = vscode.commands.registerCommand('vscode-screensaver.start', () => {
         vscode.commands.executeCommand('workbench.view.explorer');
-        // Focus the screensaver view
-        vscode.commands.executeCommand('vscode-screensaver.view.focus');
     });
 
     // Register command to stop the screensaver
     const stopCommand = vscode.commands.registerCommand('vscode-screensaver.stop', () => {
-        provider.dispose();
+        vscode.commands.executeCommand('workbench.action.closeSidebar');
     });
 
     context.subscriptions.push(startCommand, stopCommand);

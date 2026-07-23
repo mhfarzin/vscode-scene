@@ -50,6 +50,10 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
                     width: 100%;
                     height: 100%;
                 }
+                .container {
+                    width: 100%;
+                    height: 100%;
+                }
                 #canvas {
                     width: 100%;
                     height: 100%;
@@ -58,7 +62,9 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
             </style>
         </head>
         <body>
-            <canvas id="canvas"></canvas>
+            <div class="container">
+                <canvas id="canvas"></canvas>
+            </div>
             <script src="${scriptUri}"></script>
         </body>
         </html>`;
