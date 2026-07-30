@@ -19,7 +19,7 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
             enableScripts: true,
             localResourceRoots: [
                 vscode.Uri.joinPath(this._extensionUri, "dist"),
-                vscode.Uri.joinPath(this._extensionUri, "media"),
+                vscode.Uri.joinPath(this._extensionUri, "assets"),
             ],
         };
 
@@ -33,6 +33,10 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
     private _getHtmlForWebview(webview: vscode.Webview) {
         const scriptUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this._extensionUri, "dist", "panel.js"),
+        );
+
+        const assetsUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this._extensionUri, "assets"),
         );
 
         return `<!DOCTYPE html>
@@ -65,6 +69,9 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
             <div class="container">
                 <canvas id="canvas"></canvas>
             </div>
+            <script>
+                window.__ASSETS_BASE_URI__ = "${assetsUri}";
+            </script>
             <script src="${scriptUri}"></script>
         </body>
         </html>`;
