@@ -70,7 +70,7 @@ const CLOUD_SPAWN_DELAY_MAX = 20000;
 const CLOUD_COLOR = 0xffffff;
 
 /** Base radius (px) of the cloud's center fluff. */
-const CLOUD_BASE_SIZE = 25;
+const CLOUD_BASE_SIZE = 22;
 
 /** Random variation (px) added to the base size → keeps clouds similar. */
 const CLOUD_SIZE_VARIATION = 5;
@@ -79,7 +79,7 @@ const CLOUD_SIZE_VARIATION = 5;
 const MAX_PLANES = 1;
 
 /** Scale factor for airplane sprites (0.6 = 60% of the original image size). */
-const PLANE_SCALE = 0.6;
+const PLANE_SCALE = 0.5;
 
 // --------------------------------------------------------------------------
 // Cloud geometry
