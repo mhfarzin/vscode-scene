@@ -3,8 +3,18 @@
  * ---------------------------------------------------------------------------
  * A Pixi.js-based screensaver scene featuring:
  *   1. A light-blue sky background
- *   2. Drifting clouds that slowly move from left to right
+ *   2. Procedurally generated drifting clouds
  *   3. Colorful airplanes (Blue/Green/Red/Yellow) that fly across the screen
+ *
+ * Clouds are generated with circles (Pixi Graphics) instead of PNG images —
+ * each cloud is a group of overlapping circles with a flat bottom, drifting
+ * gently from left to right. The generation logic mirrors the classic
+ * "fluff cloud" algorithm: a big center circle + descending side circles +
+ * end circles that fill out the bottom.
+ *
+ * Layers: clouds live in a `cloudLayer` Container and planes in a
+ * `planeLayer` Container added AFTER the cloud layer, so planes always
+ * render on top of clouds (no per-frame z-index juggling).
  *
  * The screen uses the Canvas2D renderer (`preference: 'canvas'`) because
  * VS Code WebViews do NOT support WebGL.
@@ -18,14 +28,15 @@
  * ---------------------------------------------------------------------------
  */
 
-import { Application, Sprite, Texture } from 'pixi.js';
+import { Application, Sprite, Texture, Graphics, Container } from 'pixi.js';
 import { BaseScreen, ScreenConfig } from './BaseScreen';
+import { BalancedDeck } from '../utils/random';
 
 /**
  * Builds a fully-qualified asset URL from a path relative to `assets/`.
  * Falls back to an empty string if `__ASSETS_BASE_URI__` is not available.
  *
- * @param relativePath - e.g. 'screens/sky-pilot/cloud1.PNG'
+ * @param relativePath - e.g. 'screens/sky-pilot/planeBlue1.png'
  * @returns the absolute webview URL for the asset
  */
 function assetsUrl(relativePath: string): string {
@@ -33,48 +44,73 @@ function assetsUrl(relativePath: string): string {
     return `${base}/${relativePath}`.replace(/\/+/g, '/');
 }
 
+// --------------------------------------------------------------------------
+// Constants
+// --------------------------------------------------------------------------
+
 /** Available airplane colors. Each color has 3 propeller frames. */
 const PLANE_COLORS = ['Blue', 'Green', 'Red', 'Yellow'];
 
 /** Time (ms) between propeller frame swaps → controls prop spin speed. */
 const FRAME_INTERVAL = 80;
 
-/** Light-blue background color for the sky (no background image). */
-const SKY_COLOR = 0x6eb7e9;
-
-/** Cloud sprite image files to choose from. */
-const CLOUD_FILES = ['cloud1.PNG', 'cloud2.PNG', 'cloud3.PNG'];
-
-/** Cloud width as a fraction of the screen width (0.7 = 70%). */
-const CLOUD_WIDTH_RATIO = 0.5;
-
-/** Random extra width added on top of CLOUD_WIDTH_RATIO. */
-const CLOUD_WIDTH_RANDOM = 0.15;
+/** Light-blue background color for the sky (matches the original sample). */
+const SKY_COLOR = 0x9bd2f8;
 
 /** Fixed horizontal drift speed (px per frame) for ALL clouds. */
 const CLOUD_SPEED = 0.2;
 
-/** Opacity applied to every cloud sprite (0..1). */
-const CLOUD_ALPHA = 0.7;
-
 /** Min delay (ms) before spawning the next cloud. */
-const CLOUD_SPAWN_DELAY_MIN = 10000;
+const CLOUD_SPAWN_DELAY_MIN = 15000;
 
 /** Max delay (ms) before spawning the next cloud. */
-const CLOUD_SPAWN_DELAY_MAX = 12000;
+const CLOUD_SPAWN_DELAY_MAX = 20000;
+
+/** Solid white color for cloud fill (opaque — hides overlapping circles). */
+const CLOUD_COLOR = 0xffffff;
+
+/** Base radius (px) of the cloud's center fluff. */
+const CLOUD_BASE_SIZE = 25;
+
+/** Random variation (px) added to the base size → keeps clouds similar. */
+const CLOUD_SIZE_VARIATION = 5;
 
 /** Maximum number of planes allowed on screen at the same time. */
 const MAX_PLANES = 1;
 
-/** Scale factor for airplane sprites (0.4 = 40% of the original image size). */
-const PLANE_SCALE = 0.5;
+/** Scale factor for airplane sprites (0.6 = 60% of the original image size). */
+const PLANE_SCALE = 0.6;
+
+// --------------------------------------------------------------------------
+// Cloud geometry
+// --------------------------------------------------------------------------
 
 /**
- * A set of 3 textures (propeller frames) belonging to a single plane color.
+ * A single "fluff" circle that makes up part of a cloud.
  */
-interface PlaneFrames {
-    /** [frame0, frame1, frame2] — cycled to animate the propeller. */
-    textures: Texture[];
+interface Fluff {
+    /** Horizontal center (px), relative to the cloud Graphics origin. */
+    x: number;
+    /** Vertical center (px), relative to the cloud Graphics origin. */
+    y: number;
+    /** Circle radius (px). */
+    r: number;
+}
+
+/**
+ * All the geometric data for a generated cloud.
+ */
+interface CloudData {
+    /** Circles composing the cloud. */
+    fluffs: Fluff[];
+    /** Leftmost X extents. */
+    x1: number;
+    /** Rightmost X extents. */
+    x2: number;
+    /** Topmost Y extents. */
+    y1: number;
+    /** Bottom Y (the flat base line). */
+    y2: number;
 }
 
 /**
@@ -98,40 +134,248 @@ interface PlaneState {
 }
 
 /**
+ * A set of 3 textures (propeller frames) belonging to a single plane color.
+ */
+interface PlaneFrames {
+    /** [frame0, frame1, frame2] — cycled to animate the propeller. */
+    textures: Texture[];
+}
+
+/**
  * Runtime state for one drifting cloud.
  */
 interface CloudState {
-    /** The Pixi sprite rendered on stage. */
-    sprite: Sprite;
-    /** Horizontal drift speed (px per frame). */
-    speed: number;
+    /** A Container holding the cloud Graphics + its shadow. */
+    gfx: Container;
+    /** Half-width of the cloud — used for removal checks. */
+    halfW: number;
 }
+
+// --------------------------------------------------------------------------
+// Cloud generation helpers (mirrors the classic fluff-cloud algorithm)
+// --------------------------------------------------------------------------
+
+/** Random float between min and max. */
+const rand = (min: number, max: number) => Math.random() * (max - min) + min;
+
+/** Random int in [0, max). */
+const randInt = (max: number) => Math.floor(Math.random() * max);
+
+/** Euclidean distance between two points. */
+const dist = (x1: number, y1: number, x2: number, y2: number) =>
+    Math.abs(Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2));
+
+/**
+ * Calculates the position of the next smaller circle placed to the LEFT
+ * of a previous one — offset downward and overlapping.
+ */
+function calcPositionLeft(prev: Fluff, r: number): Fluff {
+    const r1 = prev.r;
+    const r2 = r;
+    // Very small hLine keeps circles tightly overlapping (natural cloud look).
+    const hLine = randInt(r1 / 10);
+    const a = r1 - r2 - hLine;
+    const h = r1 + r2;
+    const b = Math.sqrt(h * h - a * a);
+    return { x: prev.x - b, y: prev.y + a, r: r2 };
+}
+
+/**
+ * Calculates the position of the next smaller circle placed to the RIGHT
+ * of a previous one — offset downward and overlapping.
+ */
+function calcPositionRight(prev: Fluff, r: number): Fluff {
+    const r1 = prev.r;
+    const r2 = r;
+    // Very small hLine keeps circles tightly overlapping (natural cloud look).
+    const hLine = randInt(r1 / 8);
+    const a = r1 - r2 - hLine;
+    const h = r1 + r2;
+    const b = Math.sqrt(h * h - a * a);
+    return { x: prev.x + b, y: prev.y + a, r: r2 };
+}
+
+/**
+ * Generates a cloud as a set of overlapping circles ("fluffs").
+ *
+ * Algorithm:
+ *   1. One big center circle (scales to screen — medium sized).
+ *   2. At least 1 pair (up to 3) of smaller circles added alternately
+ *      left/right, each slightly lower than the previous (descending chain).
+ *   3. Two large end circles fill the bottom-left and bottom-right.
+ *   4. The flat bottom is the lowest extent of all circles.
+ *
+ * @param rectW - screen width (used to scale cloud size)
+ * @param rectH - screen height (used to scale cloud size)
+ * @returns geometry data for the generated cloud
+ */
+function generateCloud(rectW: number, rectH: number): CloudData {
+    // Consistent medium size: base radius + small random variation,
+    // so all clouds look similar in scale (never tiny, never huge).
+    const bigR = CLOUD_BASE_SIZE + Math.random() * CLOUD_SIZE_VARIATION;
+
+    const fluffs: Fluff[] = [];
+    const bigFluff: Fluff = {
+        x: randInt(rectW),
+        y: randInt(rectH),
+        r: bigR,
+    };
+
+    const minSize = bigFluff.r / 3;
+    const maxSize = bigFluff.r;
+
+    let prevLeft = bigFluff;
+    let prevRight = bigFluff;
+
+    // Always at least one pair of side circles so the cloud has a
+    // recognizable fluffy silhouette (never just a single circle).
+    const amount = 1 + randInt(2); // 1..3 pairs
+    fluffs.push(bigFluff);
+
+    for (let index = 0; index < amount; index += 2) {
+        let rL = rand(minSize, maxSize);
+        let rR = index + 1 < amount ? rand(minSize, maxSize) : 0;
+
+        // Occasionally swap the two radii for variety.
+        if (Math.random() < 0.5) {
+            const t = rL;
+            rL = rR;
+            rR = t;
+        }
+
+        // Left side circle.
+        const newL = calcPositionLeft(prevLeft, rL);
+        fluffs.unshift(newL);
+        prevLeft = newL;
+
+        // Right side circle.
+        if (rR > 0) {
+            const newR = calcPositionRight(prevRight, rR);
+            fluffs.push(newR);
+            prevRight = newR;
+        }
+    }
+
+    // Extents of the cloud.
+    const y2 = fluffs.reduce((prev, cur) => Math.max(prev, cur.y + cur.r), 0); // bottom
+    const y1 = fluffs.reduce((prev, cur) => Math.min(prev, cur.y - cur.r), rectH); // top
+    const x1 = fluffs.reduce((prev, cur) => Math.min(prev, cur.x - cur.r), rectW); // left
+    const x2 = fluffs.reduce((prev, cur) => Math.max(prev, cur.x + cur.r), 0); // right
+
+    // End circles fill the bottom so the cloud has a full rounded base.
+    const createEndLeft = () => {
+        const first = fluffs[0];
+        const diam = Math.max(minSize * 2, y2 - first.y);
+        const r = diam / 2;
+        const pos = calcPositionLeft(first, r);
+        const offset = dist(first.x, first.y, pos.x, pos.y) - (first.r + r);
+        fluffs.unshift({ x: pos.x + offset, y: y2 - r, r });
+    };
+
+    const createEndRight = () => {
+        const last = fluffs[fluffs.length - 1];
+        const diam = Math.max(minSize * 2, y2 - last.y);
+        const r = diam / 2;
+        const pos = calcPositionRight(last, r);
+        const offset = dist(last.x, last.y, pos.x, pos.y) - (last.r + r);
+        fluffs.push({ x: pos.x - offset, y: y2 - r, r });
+    };
+
+    createEndLeft();
+    createEndRight();
+
+    return { fluffs, x1, x2, y1, y2 };
+}
+
+/**
+ * Draws a cloud shape (the same path) into a Graphics object.
+ *
+ * @param cloud - geometry data from `generateCloud`
+ * @param color - fill color for the shape
+ * @returns a Graphics object with the cloud shape filled
+ */
+function drawCloudShape(cloud: CloudData, color: number): Graphics {
+    const gfx = new Graphics();
+
+    // Offset everything so the cloud is centered at (0,0).
+    const cx = (cloud.x1 + cloud.x2) / 2;
+    const cy = (cloud.y1 + cloud.y2) / 2;
+    const fluffs = cloud.fluffs.map((f) => ({ x: f.x - cx, y: f.y - cy, r: f.r }));
+    const bottomY = cloud.y2 - cy;
+
+    // Trace the outline: circle arcs + close across the bottom.
+    gfx.beginPath();
+    for (const f of fluffs) {
+        gfx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+    }
+    gfx.moveTo(fluffs[0].x, bottomY);
+    for (const f of fluffs) {
+        gfx.lineTo(f.x, f.y);
+    }
+    gfx.lineTo(fluffs[fluffs.length - 1].x, bottomY);
+    gfx.closePath();
+
+    // Solid uniform fill — overlapping circle layers are NOT visible.
+    gfx.fill(color);
+
+    return gfx;
+}
+
+/**
+ * Builds a cloud visually: a soft gray shadow drawn slightly offset
+ * behind a solid white cloud. Both are grouped in a Container so the
+ * pair moves together.
+ *
+ * @param cloud - geometry data from `generateCloud`
+ * @returns a Container (shadow + cloud) centered at its origin
+ */
+function cloudToGraphics(cloud: CloudData): Container {
+    const wrapper = new Container();
+
+    // Shadow: light gray-blue = visual equivalent of the original's
+    // rgba(80, 80, 80, 0.2) blended over the #9bd2f8 sky, but fully solid.
+    const shadow = drawCloudShape(cloud, 0x8eb8d6);
+    shadow.position.set(6, 6);
+    wrapper.addChild(shadow);
+
+    // Main cloud: opaque white on top.
+    const body = drawCloudShape(cloud, CLOUD_COLOR);
+    wrapper.addChild(body);
+
+    return wrapper;
+}
+
+// --------------------------------------------------------------------------
+// SkyPilotScreen
+// --------------------------------------------------------------------------
 
 /**
  * SkyPilotScreen — the main screensaver scene.
  *
- * Renders a sky-blue background with drifting clouds and periodically
- * spawning airplanes that fly across the screen.
+ * Renders a sky-blue background with procedurally generated drifting
+ * clouds and periodically spawning airplanes flying across the screen.
  *
- * Clouds are simple: every 2–5 seconds a new cloud enters from the
- * left edge and drifts right until it exits, then it is removed.
- * No counts, no overlap checks — just endless gentle cloud flow.
+ * Clouds and planes live in separate containers: the plane layer is added
+ * AFTER the cloud layer so planes always render on top.
  */
 export class SkyPilotScreen extends BaseScreen {
     /** The Pixi Application (renderer + stage). null until initialized. */
     private app: Application | null = null;
 
-    /** All currently-active airplane sprites + their state. */
-    private planes: PlaneState[] = [];
+    /** Container holding all cloud Graphics objects (rendered first). */
+    private cloudLayer: Container | null = null;
+
+    /** Container holding all plane sprites (rendered on top of clouds). */
+    private planeLayer: Container | null = null;
 
     /** All currently-active cloud sprites + their state. */
     private clouds: CloudState[] = [];
 
+    /** All currently-active airplane sprites + their state. */
+    private planes: PlaneState[] = [];
+
     /** Loaded propeller-frame sets, one per successfully-loaded color. */
     private allFrames: PlaneFrames[] = [];
-
-    /** Loaded cloud textures (may be 0–3 depending on load success). */
-    private cloudTextures: Texture[] = [];
 
     /** True once all assets are loaded and the scene is ready to animate. */
     private ready: boolean = false;
@@ -139,8 +383,14 @@ export class SkyPilotScreen extends BaseScreen {
     /** Interval handle that attempts to spawn a new plane every 2s. */
     private spawnInterval: ReturnType<typeof setInterval> | null = null;
 
-    /** Timer handle that spawns clouds on a 2–5s loop. */
+    /** Timer handle that spawns clouds on a 10–12s loop. */
     private cloudTimer: ReturnType<typeof setTimeout> | null = null;
+
+    /** Balanced deck for cloud altitudes — spreads Y values evenly. */
+    private cloudYDeck: BalancedDeck = new BalancedDeck(4);
+
+    /** Balanced deck for plane altitudes — spreads Y values evenly. */
+    private planeYDeck: BalancedDeck = new BalancedDeck(4);
 
     constructor(canvas: HTMLCanvasElement, config: ScreenConfig) {
         super(canvas, config);
@@ -156,7 +406,7 @@ export class SkyPilotScreen extends BaseScreen {
     }
 
     /**
-     * Initializes Pixi, loads all assets, and kicks off the spawners.
+     * Initializes Pixi, loads plane assets, and kicks off the spawners.
      */
     private async _initPixi(): Promise<void> {
         // Clean up any previous Pixi instance (e.g. after a re-init).
@@ -168,10 +418,11 @@ export class SkyPilotScreen extends BaseScreen {
             }
             this.app.destroy(true, { children: true });
             this.app = null;
+            this.cloudLayer = null;
+            this.planeLayer = null;
             this.planes = [];
             this.clouds = [];
             this.allFrames = [];
-            this.cloudTextures = [];
         }
 
         // Create the Pixi application on the existing canvas.
@@ -185,16 +436,12 @@ export class SkyPilotScreen extends BaseScreen {
             preference: 'canvas',
         });
 
-        // ---- Load cloud images -----------------------------------------
-        for (const file of CLOUD_FILES) {
-            try {
-                const url = assetsUrl('screens/sky-pilot/' + file);
-                const img = await this._loadImage(url);
-                this.cloudTextures.push(Texture.from(img));
-            } catch (err) {
-                console.error(`[SkyPilot] Failed to load cloud ${file}`, err);
-            }
-        }
+        // Create the two layers. Order matters:
+        // cloudLayer added first → rendered first (background);
+        // planeLayer added afterwards → always on top of clouds.
+        this.cloudLayer = new Container();
+        this.planeLayer = new Container();
+        this.app.stage.addChild(this.cloudLayer, this.planeLayer);
 
         // ---- Load all plane colors (each color = 3 propeller frames) ----
         for (const color of PLANE_COLORS) {
@@ -219,17 +466,14 @@ export class SkyPilotScreen extends BaseScreen {
 
         // The scene is ready only if at least one plane variant is available.
         this.ready = this.allFrames.length > 0;
-        console.log(
-            `[SkyPilot] Loaded ${this.allFrames.length} plane variants, ` +
-            `${this.cloudTextures.length} cloud types`
-        );
+        console.log(`[SkyPilot] Loaded ${this.allFrames.length} plane variants`);
 
         // ---- Start spawners --------------------------------------------
         // Planes: try every 2s; first plane spawns almost immediately.
         this.spawnInterval = setInterval(() => this._trySpawn(), 2000);
         setTimeout(() => this._trySpawn(), 300);
 
-        // Clouds: spawn one every 2–5 seconds.
+        // Clouds: spawn one every 10–12 seconds.
         this._scheduleCloudSpawn(300);
     }
 
@@ -265,10 +509,10 @@ export class SkyPilotScreen extends BaseScreen {
         const w = this.app.screen.width;
         const h = this.app.screen.height;
 
-        // Random direction, speed, and altitude.
+        // Random direction and speed; altitude is balanced (no clumping).
         const direction: 1 | -1 = Math.random() > 0.5 ? 1 : -1;
         const speed = 0.6 + Math.random() * 0.9;
-        const y = 50 + Math.random() * (h * 0.5);
+        const y = this.planeYDeck.nextValue(50, h * 0.5 + 50);
 
         // Start fully off-screen.
         const x = direction === 1 ? -100 : w + 100;
@@ -287,10 +531,8 @@ export class SkyPilotScreen extends BaseScreen {
             sprite.scale.x = -PLANE_SCALE;
         }
 
-        this.app.stage.addChild(sprite);
-
-        // Keep the plane on the topmost layer so clouds never cover it.
-        this.app.stage.setChildIndex(sprite, this.app.stage.children.length - 1);
+        // Add to the plane layer (always rendered above clouds).
+        this.planeLayer?.addChild(sprite);
 
         this.planes.push({
             sprite,
@@ -318,40 +560,34 @@ export class SkyPilotScreen extends BaseScreen {
     }
 
     /**
-     * Spawns a single cloud entering from the left edge.
-     * Picks a random texture, size, altitude, and drift speed.
+     * Spawns a procedurally generated cloud entering from the left edge.
+     * The cloud graphics are generated once and reused for its lifetime.
      */
     private _spawnCloud(): void {
         if (!this.app) {
             return;
         }
-        if (this.cloudTextures.length > 0) {
-            // Pick a random cloud texture.
-            const tex = this.cloudTextures[Math.floor(Math.random() * this.cloudTextures.length)];
 
-            const sprite = new Sprite(tex);
-            sprite.anchor.set(0.5, 0.5);
+        const { width, height } = this.app.screen;
 
-            // Scale the cloud so its width is a fraction of the screen width.
-            const targetWidth = this.app.screen.width * (CLOUD_WIDTH_RATIO + Math.random() * CLOUD_WIDTH_RANDOM);
-            sprite.scale.set(targetWidth / tex.width);
+        // Generate the cloud shape and convert it to a centered Graphics.
+        const data = generateCloud(width, height);
+        const gfx = cloudToGraphics(data);
+        const halfW = gfx.width / 2;
 
-            // Enter from the left edge, fully off-screen.
-            sprite.x = -sprite.width / 2;
+        // Enter from the left edge, fully off-screen.
+        gfx.x = -halfW;
 
-            // Random altitude in the upper portion of the screen.
-            sprite.y = 40 + Math.random() * (this.app.screen.height * 0.5);
+        // Balanced random altitude in the upper portion of the screen.
+        gfx.y = this.cloudYDeck.nextValue(40, 40 + height * 0.5);
 
-            this.app.stage.addChild(sprite);
+        // Add to the cloud layer (rendered beneath planes).
+        this.cloudLayer?.addChild(gfx);
 
-            // Apply uniform opacity so no cloud looks too heavy.
-            sprite.alpha = CLOUD_ALPHA;
-
-            this.clouds.push({
-                sprite,
-                speed: CLOUD_SPEED, // fixed speed for all clouds
-            });
-        }
+        this.clouds.push({
+            gfx,
+            halfW,
+        });
 
         // Schedule the next cloud.
         this._scheduleCloudSpawn();
@@ -378,12 +614,12 @@ export class SkyPilotScreen extends BaseScreen {
         // ---- Move clouds (slow drift to the right) ----------------------
         for (let i = this.clouds.length - 1; i >= 0; i--) {
             const cloud = this.clouds[i];
-            cloud.sprite.x += cloud.speed;
+            cloud.gfx.x += CLOUD_SPEED;
 
             // Remove once fully off-screen right.
-            if (cloud.sprite.x > w + cloud.sprite.width / 2) {
-                this.app.stage.removeChild(cloud.sprite);
-                cloud.sprite.destroy();
+            if (cloud.gfx.x - cloud.halfW > w) {
+                this.cloudLayer?.removeChild(cloud.gfx);
+                cloud.gfx.destroy();
                 this.clouds.splice(i, 1);
             }
         }
@@ -406,7 +642,7 @@ export class SkyPilotScreen extends BaseScreen {
             // Remove the plane once it has fully exited the screen.
             if ((plane.direction === 1 && plane.x > w + 150) ||
                 (plane.direction === -1 && plane.x < -150)) {
-                this.app.stage.removeChild(plane.sprite);
+                this.planeLayer?.removeChild(plane.sprite);
                 plane.sprite.destroy();
                 this.planes.splice(i, 1);
             }
@@ -461,10 +697,11 @@ export class SkyPilotScreen extends BaseScreen {
         }
 
         // Reset state.
+        this.cloudLayer = null;
+        this.planeLayer = null;
         this.planes = [];
         this.clouds = [];
         this.allFrames = [];
-        this.cloudTextures = [];
         this.ready = false;
     }
 }
