@@ -4,6 +4,15 @@
   "description": "Beautiful relaxing animated scenes for VS Code",
   "publisher": "MH Farzin",
   "version": "0.0.1",
+  "icon": "assets/icons/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mhfarzin/vscode-screensaver"
+  },
+  "bugs": {
+    "url": "https://github.com/mhfarzin/vscode-screensaver/issues"
+  },
+  "homepage": "https://github.com/mhfarzin/vscode-screensaver",
   "engines": {
     "vscode": "^1.125.0"
   },
@@ -48,7 +57,7 @@
         {
           "type": "webview",
           "id": "vscode-screensaver.view",
-          "name": "Screensaver"
+          "name": "VS Code Screensaver"
         }
       ]
     }

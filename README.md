@@ -1,71 +1,86 @@
-# vscode-screensaver README
+# VS Code Screensaver ✨
 
-This is the README for your extension "vscode-screensaver". After writing up a brief description, we recommend including the following sections.
+Beautiful, relaxing animated scenes right inside your VS Code Explorer sidebar.
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Turn your IDE into a calming window — with twinkling stars drifting through a night sky, or a peaceful sky scene with clouds and tiny airplanes flying across. Perfect for breaks, idle moments, or just making your editor feel alive.
 
 ---
 
-## Following extension guidelines
+## ✨ Features
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+### 🌟 Stars
+A pure Canvas2D starfield — **200 twinkling stars** drift slowly upward, each with its own brightness rhythm.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+### ✈️ SkyPilot
+A Pixi.js sky scene — a light-blue sky with **procedurally generated drifting clouds** and **colorful airplanes** (Blue / Green / Red / Yellow) flying across the screen with spinning propellers.
 
-## Working with Markdown
+---
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+## 🖱️ How to Use
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+1. Open the **Explorer** view (sidebar).
+2. Find the **Screensaver** panel at the bottom of the Explorer.
+3. The animation starts automatically.
 
-## For more information
+You can also use the commands from the Command Palette (`Ctrl+Shift+P`):
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+| Command | What it does |
+|---|---|
+| **Start Screensaver** | Opens the Explorer to show the screensaver |
+| **Stop Screensaver** | Closes the sidebar to hide it |
 
-**Enjoy!**
+---
+
+## ⚙️ Settings
+
+This extension contributes the following settings:
+
+| Setting | Description | Default |
+|---|---|---|
+| `vscode-screensaver.screen` | The screensaver screen to display (`stars` or `sky-pilot`) | `sky-pilot` |
+
+You can change the screen from **Settings → Extensions → Screensaver**, and the scene switches **live** — no reload needed.
+
+---
+
+## 🎨 Icon
+
+The extension icon features a deep night sky with a glowing moon, twinkling stars, and a tiny airplane — tying together both available screens.
+
+---
+
+## 🚀 Development
+
+```bash
+npm install        # Install dependencies
+npm run compile    # Build the extension (webpack)
+npm run watch      # Watch mode
+npm test           # Run tests
+```
+
+To debug: press `F5` in VS Code to launch the Extension Development Host.
+
+---
+
+## 📦 Publishing
+
+```bash
+npx @vscode/vsce package   # Create a .vsix file
+npx @vscode/vsce publish   # Publish to the Marketplace
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 🐛 Issues & Feedback
+
+Found a bug or have a feature request? Open an issue on [GitHub](https://github.com/mhfarzin/vscode-screensaver/issues).
+
+---
+
+**Enjoy your screensaver!** 🚀
