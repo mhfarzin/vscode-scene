@@ -26,8 +26,8 @@ You can also use the commands from the Command Palette (`Ctrl+Shift+P`):
 
 | Command | What it does |
 |---|---|
-| **Start Screensaver** | Opens the Explorer to show the screensaver |
-| **Stop Screensaver** | Closes the sidebar to hide it |
+| **VS Code Screensaver: Start** | Opens the Explorer to show the screensaver |
+| **VS Code Screensaver: Stop** | Closes the sidebar to hide it |
 
 ---
 

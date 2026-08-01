@@ -22,7 +22,7 @@
   "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
-      "title": "Screensaver",
+      "title": "VS Code Screensaver",
       "properties": {
         "vscode-screensaver.screen": {
           "type": "string",
@@ -30,25 +30,21 @@
             "stars",
             "sky-pilot"
           ],
-          "enumDescriptions": [
-            "Twinkling stars drifting upward (Canvas2D).",
-            "Sky scene with drifting clouds and flying airplanes (Pixi.js)."
-          ],
-          "default": "sky-pilot",
           "description": "The screensaver screen to display.",
-          "scope": "window"
+          "scope": "window",
+           "default": "sky-pilot"
         }
       }
     },
     "commands": [
       {
         "command": "vscode-screensaver.start",
-        "title": "Start Screensaver",
+        "title": "VS Code Screensaver: Start",
         "icon": "$(play)"
       },
       {
         "command": "vscode-screensaver.stop",
-        "title": "Stop Screensaver",
+        "title": "VS Code Screensaver: Stop",
         "icon": "$(stop)"
       }
     ],
@@ -57,7 +53,8 @@
         {
           "type": "webview",
           "id": "vscode-screensaver.view",
-          "name": "VS Code Screensaver"
+          "name": "VS Code Screensaver",
+          "icon": ""
         }
       ]
     }
