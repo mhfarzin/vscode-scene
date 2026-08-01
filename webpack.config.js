@@ -12,7 +12,7 @@ const extensionConfig = {
   target: 'node',
   mode: 'none',
 
-  entry: './src/extension.ts',
+  entry: './src/host/extension.ts',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'extension.js',
@@ -53,7 +53,7 @@ const panelConfig = {
   target: 'web',
   mode: 'none',
 
-  entry: './src/panel/panel.ts',
+  entry: './src/webview/panel.ts',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'panel.js'

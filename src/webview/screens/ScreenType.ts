@@ -5,9 +5,10 @@
  *
  * Adding a new screen type requires:
  *   1. Adding a new enum value here.
- *   2. Creating the screen class in `src/panel/screens/`.
+ *   2. Creating the screen class in `src/webview/screens/`.
  *   3. Registering it in `ScreenFactory.ts`.
- *   4. Selecting it in `src/panel/panel.ts` (for testing).
+ *   4. Adding it to the `vscode-screensaver.screen` enum in `package.json`.
+ *   5. Adding it to `VALID_SCREEN_TYPES` in `src/host/ScreensaverPanel.ts`.
  * ---------------------------------------------------------------------------
  */
 

@@ -359,6 +359,9 @@ function cloudToGraphics(cloud: CloudData): Container {
  * AFTER the cloud layer so planes always render on top.
  */
 export class SkyPilotScreen extends BaseScreen {
+    /** True once `dispose()` has been called — guards async `start()`. */
+    private disposed: boolean = false;
+
     /** The Pixi Application (renderer + stage). null until initialized. */
     private app: Application | null = null;
 
@@ -401,7 +404,15 @@ export class SkyPilotScreen extends BaseScreen {
      * animation loop (which drives `update()`/`render()`).
      */
     async start(): Promise<void> {
+        this.disposed = false;
         await this._initPixi();
+
+        // Guard: the screen may have been disposed while we were awaiting
+        // asset loading. If so, do NOT start the animation loop.
+        if (this.disposed) {
+            return;
+        }
+
         super.start();
     }
 
@@ -410,13 +421,15 @@ export class SkyPilotScreen extends BaseScreen {
      */
     private async _initPixi(): Promise<void> {
         // Clean up any previous Pixi instance (e.g. after a re-init).
+        // IMPORTANT: pass `false` for removeView so the canvas stays in
+        // the DOM — `true` would detach it and leave a black panel.
         if (this.app) {
             this.stop();
             if (this.cloudTimer) {
                 clearTimeout(this.cloudTimer);
                 this.cloudTimer = null;
             }
-            this.app.destroy(true, { children: true });
+            this.app.destroy(false, { children: true });
             this.app = null;
             this.cloudLayer = null;
             this.planeLayer = null;
@@ -435,6 +448,13 @@ export class SkyPilotScreen extends BaseScreen {
             backgroundColor: SKY_COLOR,
             preference: 'canvas',
         });
+
+        // Bail out if the screen was disposed while Pixi was initializing.
+        if (this.disposed) {
+            this.app?.destroy(false, { children: true });
+            this.app = null;
+            return;
+        }
 
         // Create the two layers. Order matters:
         // cloudLayer added first → rendered first (background);
@@ -457,6 +477,10 @@ export class SkyPilotScreen extends BaseScreen {
                     ok = false;
                     break;
                 }
+            }
+            // Bail out if the screen was disposed while assets were loading.
+            if (this.disposed) {
+                return;
             }
             // Only register the color if all 3 frames loaded successfully.
             if (ok && textures.length === 3) {
@@ -676,6 +700,7 @@ export class SkyPilotScreen extends BaseScreen {
      * destroys the Pixi app, and resets all state.
      */
     dispose(): void {
+        this.disposed = true;
         this.stop();
 
         // Stop the plane spawner.
@@ -691,8 +716,11 @@ export class SkyPilotScreen extends BaseScreen {
         }
 
         // Destroy Pixi and all its children.
+        // IMPORTANT: pass `false` for removeView — passing `true` would
+        // detach the <canvas> from the DOM, leaving the next screen
+        // with a black panel.
         if (this.app) {
-            this.app.destroy(true, { children: true });
+            this.app.destroy(false, { children: true });
             this.app = null;
         }
 

@@ -12,6 +12,25 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Screensaver",
+      "properties": {
+        "vscode-screensaver.screen": {
+          "type": "string",
+          "enum": [
+            "stars",
+            "sky-pilot"
+          ],
+          "enumDescriptions": [
+            "Twinkling stars drifting upward (Canvas2D).",
+            "Sky scene with drifting clouds and flying airplanes (Pixi.js)."
+          ],
+          "default": "sky-pilot",
+          "description": "The screensaver screen to display.",
+          "scope": "window"
+        }
+      }
+    },
     "commands": [
       {
         "command": "vscode-screensaver.start",

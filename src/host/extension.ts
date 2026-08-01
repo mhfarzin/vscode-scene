@@ -9,13 +9,13 @@
  *   - Registers `vscode-screensaver.start` / `vscode-screensaver.stop`
  *     commands that show/hide the sidebar
  *
- * The heavy lifting (rendering, screen switching, animation) happens
- * client-side in `src/panel/panel.ts` and the screen classes.
+ * This file runs in the extension host (Node.js). All screensaver
+ * rendering lives client-side in `src/webview/`.
  * ---------------------------------------------------------------------------
  */
 
 import * as vscode from 'vscode';
-import { ScreensaverViewProvider } from './panel/ScreensaverPanel';
+import { ScreensaverViewProvider } from './ScreensaverPanel';
 
 /**
  * Called once when the extension is activated.
