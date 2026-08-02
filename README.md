@@ -1,72 +1,76 @@
 # VS Code Screensaver ✨
 
-Beautiful, relaxing animated scenes right inside your VS Code Explorer sidebar.
+Bring beautiful animated scenes to your VS Code Explorer sidebar.
 
-Turn your IDE into a calming window — with twinkling stars drifting through a night sky, or a peaceful sky scene with clouds and tiny airplanes flying across. Perfect for breaks, idle moments, or just making your editor feel alive.
+Transform your editor into a relaxing, living workspace with smooth animated scenes. Watch twinkling stars drift across a peaceful night sky or enjoy colorful airplanes gliding through soft clouds—all without leaving VS Code.
+
+Whether you're coding, taking a short break, or simply want a more enjoyable workspace, VS Code Screensaver adds subtle motion to your Explorer sidebar.
 
 ---
 
 ## ✨ Features
 
 ### 🌟 Stars
-A pure Canvas2D starfield — **200 twinkling stars** drift slowly upward, each with its own brightness rhythm.
+
+A pure Canvas2D animated starfield featuring **200 twinkling stars** that slowly drift upward, each with its own unique brightness pattern.
 
 ### ✈️ SkyPilot
-A Pixi.js sky scene — a light-blue sky with **procedurally generated drifting clouds** and **colorful airplanes** (Blue / Green / Red / Yellow) flying across the screen with spinning propellers.
+
+A Pixi.js-powered sky scene featuring **procedurally generated drifting clouds** and **colorful airplanes** (Blue, Green, Red, and Yellow) flying smoothly across the screen with spinning propellers.
 
 ---
 
 ## 🖱️ How to Use
 
-1. Open the **Explorer** view (sidebar).
-2. Find the **Screensaver** panel at the bottom of the Explorer.
-3. The animation starts automatically.
+1. Open the **Explorer** view.
+2. Locate the **Screensaver** panel at the bottom of the Explorer.
+3. Enjoy the animation—it starts automatically.
 
-You can also use the commands from the Command Palette (`Ctrl+Shift+P`):
+You can also use the Command Palette (`Ctrl+Shift+P`):
 
-| Command | What it does |
+| Command | Description |
 |---|---|
-| **VS Code Screensaver: Start** | Opens the Explorer to show the screensaver |
-| **VS Code Screensaver: Stop** | Closes the sidebar to hide it |
+| **VS Code Screensaver: Start** | Opens the Explorer and displays the Screensaver panel |
+| **VS Code Screensaver: Stop** | Closes the Explorer sidebar and hides the Screensaver |
 
 ---
 
 ## ⚙️ Settings
 
-This extension contributes the following settings:
+This extension contributes the following setting:
 
 | Setting | Description | Default |
 |---|---|---|
-| `vscode-screensaver.screen` | The screensaver screen to display (`stars` or `sky-pilot`) | `sky-pilot` |
+| `vscode-screensaver.screen` | Select the scene to display (`stars` or `sky-pilot`) | `sky-pilot` |
 
-You can change the screen from **Settings → Extensions → Screensaver**, and the scene switches **live** — no reload needed.
+Change the active scene from **Settings → Extensions → Screensaver**. The animation updates instantly—no reload required.
 
 ---
 
 ## 🎨 Icon
 
-The extension icon features a deep night sky with a glowing moon, twinkling stars, and a tiny airplane — tying together both available screens.
+The extension icon combines both available scenes: a deep night sky with a glowing moon and stars alongside a tiny airplane flying across the horizon.
 
 ---
 
 ## 🚀 Development
 
 ```bash
-npm install        # Install dependencies
-npm run compile    # Build the extension (webpack)
-npm run watch      # Watch mode
-npm test           # Run tests
+npm install
+npm run compile
+npm run watch
+npm test
 ```
 
-To debug: press `F5` in VS Code to launch the Extension Development Host.
+Launch the Extension Development Host by pressing **F5** in VS Code.
 
 ---
 
 ## 📦 Publishing
 
 ```bash
-npx @vscode/vsce package   # Create a .vsix file
-npx @vscode/vsce publish   # Publish to the Marketplace
+npx @vscode/vsce package
+npx @vscode/vsce publish
 ```
 
 ---
@@ -79,8 +83,11 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 🐛 Issues & Feedback
 
-Found a bug or have a feature request? Open an issue on [GitHub](https://github.com/mhfarzin/vscode-screensaver/issues).
+Found a bug or have an idea for a new scene?
+
+Open an issue on GitHub:
+https://github.com/mhfarzin/vscode-screensaver/issues
 
 ---
 
-**Enjoy your screensaver!** 🚀
+Enjoy your screensaver! ✨

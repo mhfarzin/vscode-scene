@@ -78,6 +78,9 @@ const CLOUD_SIZE_VARIATION = 5;
 /** Maximum number of planes allowed on screen at the same time. */
 const MAX_PLANES = 1;
 
+/** Interval (ms) between plane spawn attempts. */
+const PLANE_SPAWN_INTERVAL = 2000;
+
 /** Scale factor for airplane sprites (0.6 = 60% of the original image size). */
 const PLANE_SCALE = 0.5;
 
@@ -383,11 +386,14 @@ export class SkyPilotScreen extends BaseScreen {
     /** True once all assets are loaded and the scene is ready to animate. */
     private ready: boolean = false;
 
-    /** Interval handle that attempts to spawn a new plane every 2s. */
-    private spawnInterval: ReturnType<typeof setInterval> | null = null;
+    /** Accumulated ms since the last plane-spawn attempt (2s interval). */
+    private planeSpawnTimer: number = 0;
 
-    /** Timer handle that spawns clouds on a 10–12s loop. */
-    private cloudTimer: ReturnType<typeof setTimeout> | null = null;
+    /** Accumulated ms since the last cloud spawn. */
+    private cloudSpawnTimer: number = 0;
+
+    /** Random delay (ms) until the next cloud spawn. */
+    private cloudSpawnDelay: number = CLOUD_SPAWN_DELAY_MAX;
 
     /** Balanced deck for cloud altitudes — spreads Y values evenly. */
     private cloudYDeck: BalancedDeck = new BalancedDeck(4);
@@ -425,10 +431,6 @@ export class SkyPilotScreen extends BaseScreen {
         // the DOM — `true` would detach it and leave a black panel.
         if (this.app) {
             this.stop();
-            if (this.cloudTimer) {
-                clearTimeout(this.cloudTimer);
-                this.cloudTimer = null;
-            }
             this.app.destroy(false, { children: true });
             this.app = null;
             this.cloudLayer = null;
@@ -493,12 +495,19 @@ export class SkyPilotScreen extends BaseScreen {
         console.log(`[SkyPilot] Loaded ${this.allFrames.length} plane variants`);
 
         // ---- Start spawners --------------------------------------------
-        // Planes: try every 2s; first plane spawns almost immediately.
-        this.spawnInterval = setInterval(() => this._trySpawn(), 2000);
-        setTimeout(() => this._trySpawn(), 300);
+        // Spawn logic is driven by the requestAnimationFrame loop in
+        // `update()` using accumulated delta time — NOT by setTimeout /
+        // setInterval. Browser timers keep firing while the window is
+        // minimized, which would queue up a burst of clouds/planes that
+        // all appear at once on restore. rAF pauses when hidden, so no
+        // spawns accumulate in the background.
 
-        // Clouds: spawn one every 10–12 seconds.
-        this._scheduleCloudSpawn(300);
+        // First plane spawns almost immediately.
+        this.planeSpawnTimer = PLANE_SPAWN_INTERVAL - 300;
+
+        // First cloud spawns after a short warm-up delay.
+        this.cloudSpawnTimer = 0;
+        this.cloudSpawnDelay = 300;
     }
 
     /**
@@ -570,20 +579,6 @@ export class SkyPilotScreen extends BaseScreen {
     }
 
     /**
-     * Schedules the next cloud spawn after a random delay
-     * (CLOUD_SPAWN_DELAY_MIN..CLOUD_SPAWN_DELAY_MAX ms).
-     */
-    private _scheduleCloudSpawn(delay?: number): void {
-        if (this.cloudTimer) {
-            clearTimeout(this.cloudTimer);
-        }
-        const wait =
-            delay ??
-            CLOUD_SPAWN_DELAY_MIN + Math.random() * (CLOUD_SPAWN_DELAY_MAX - CLOUD_SPAWN_DELAY_MIN);
-        this.cloudTimer = setTimeout(() => this._spawnCloud(), wait);
-    }
-
-    /**
      * Spawns a procedurally generated cloud entering from the left edge.
      * The cloud graphics are generated once and reused for its lifetime.
      */
@@ -613,8 +608,7 @@ export class SkyPilotScreen extends BaseScreen {
             halfW,
         });
 
-        // Schedule the next cloud.
-        this._scheduleCloudSpawn();
+        // The next cloud is scheduled by the spawn logic in `update()`.
     }
 
     // ---- BaseScreen abstract implementations ----------------------------
@@ -629,11 +623,37 @@ export class SkyPilotScreen extends BaseScreen {
      * Advances clouds and planes, animates propeller frames,
      * and removes objects that have left the screen.
      */
-    update(_deltaTime: number): void {
+    update(deltaTime: number): void {
         if (!this.app || !this.ready) return;
 
         const now = performance.now();
         const w = this.app.screen.width;
+
+        // ---- Spawn planes (every PLANE_SPAWN_INTERVAL ms) ---------------
+        // Timers are driven by rAF delta time — NOT by setTimeout /
+        // setInterval. Browser timers keep firing while the window is
+        // minimized, which queues up a burst of clouds/planes that appear
+        // at once on restore. rAF pauses when hidden, so no spawns
+        // accumulate in the background. The delta clamp also prevents a
+        // huge single-frame jump (right after restore) from firing all
+        // queued spawns at once.
+        const frameDelta = Math.min(deltaTime, 250);
+
+        this.planeSpawnTimer += frameDelta;
+        if (this.planeSpawnTimer >= PLANE_SPAWN_INTERVAL) {
+            this._trySpawn();
+            this.planeSpawnTimer = 0;
+        }
+
+        // ---- Spawn clouds (every 15–20 s) -------------------------------
+        this.cloudSpawnTimer += frameDelta;
+        if (this.cloudSpawnTimer >= this.cloudSpawnDelay) {
+            this._spawnCloud();
+            this.cloudSpawnTimer = 0;
+            this.cloudSpawnDelay =
+                CLOUD_SPAWN_DELAY_MIN +
+                Math.random() * (CLOUD_SPAWN_DELAY_MAX - CLOUD_SPAWN_DELAY_MIN);
+        }
 
         // ---- Move clouds (slow drift to the right) ----------------------
         for (let i = this.clouds.length - 1; i >= 0; i--) {
@@ -702,18 +722,6 @@ export class SkyPilotScreen extends BaseScreen {
     dispose(): void {
         this.disposed = true;
         this.stop();
-
-        // Stop the plane spawner.
-        if (this.spawnInterval) {
-            clearInterval(this.spawnInterval);
-            this.spawnInterval = null;
-        }
-
-        // Stop the cloud spawner.
-        if (this.cloudTimer) {
-            clearTimeout(this.cloudTimer);
-            this.cloudTimer = null;
-        }
 
         // Destroy Pixi and all its children.
         // IMPORTANT: pass `false` for removeView — passing `true` would
