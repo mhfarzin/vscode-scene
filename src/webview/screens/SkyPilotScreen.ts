@@ -41,7 +41,10 @@ import { BalancedDeck } from '../utils/random';
  */
 function assetsUrl(relativePath: string): string {
     const base = (window as any).__ASSETS_BASE_URI__ || '';
-    return `${base}/${relativePath}`.replace(/\/+/g, '/');
+    // Trim ONE trailing slash (if any) from base, then add the relative path.
+    // A naive `.replace(/\/+/g, '/')` would also collapse the `//` protocol
+    // in `http://` → `http:/` and break the URL.
+    return `${base.replace(/\/+$/, '')}/${relativePath}`;
 }
 
 // --------------------------------------------------------------------------

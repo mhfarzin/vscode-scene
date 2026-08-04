@@ -68,7 +68,8 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "serve:test": "node scripts/serve-test.mjs"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
