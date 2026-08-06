@@ -32,11 +32,12 @@
         // ===== Reads the screen from the query string: ?screen=stars | ?screen=sky-pilot =====
         (function () {
             const params = new URLSearchParams(window.location.search);
-            const screen = params.get('screen') || 'stars';
+            // Default matches the extension's default: sky-pilot.
+            const screen = params.get('screen') || 'sky-pilot';
 
             // Valid types (mirrors src/host/ScreensaverPanel.ts VALID_SCREEN_TYPES)
             const valid = ['stars', 'sky-pilot'];
-            window.__SCREEN_TYPE__ = valid.includes(screen) ? screen : 'stars';
+            window.__SCREEN_TYPE__ = valid.includes(screen) ? screen : 'sky-pilot';
 
             // Assets folder — used by screens that load images (owl, planes).
             // './assets/' works for both file:// and http:// serving.

@@ -8,6 +8,18 @@ Whether you're coding, taking a short break, or simply want a more enjoyable wor
 
 ---
 
+## 🎬 Preview
+
+### ✈️ SkyPilot
+
+![SkyPilot Demo](https://i.imgur.com/aPbSsMg.gif)
+
+### 🌟 Stars
+
+![Stars Demo](https://i.imgur.com/dISVtMh.gif)
+
+---
+
 ## ✨ Features
 
 ### 🌟 Stars
@@ -47,13 +59,33 @@ Change the active scene from **Settings → Extensions → Screensaver**. The an
 
 ---
 
+## ⚡ Performance
+
+Animations are rendered only while the Screensaver view is visible.
+
+Use the **VS Code Screensaver: Stop** command when you do not need the animation, especially on systems with limited resources.
+
+---
+
+## 🔒 Privacy
+
+VS Code Screensaver does not collect personal data, track users, or send data to external services.
+
+---
+
+## ✅ Requirements
+
+No additional dependencies or configuration are required.
+
+---
+
 ## 🎨 Icon
 
 The extension icon combines both available scenes: a deep night sky with a glowing moon and stars alongside a tiny airplane flying across the horizon.
 
 ---
 
-## 🚀 Development
+<!-- ## 🚀 Development
 
 ```bash
 npm install
@@ -88,6 +120,6 @@ Found a bug or have an idea for a new scene?
 Open an issue on GitHub:
 https://github.com/mhfarzin/vscode-screensaver/issues
 
----
+--- -->
 
 Enjoy your screensaver! ✨

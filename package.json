@@ -2,9 +2,20 @@
   "name": "vscode-screensaver",
   "displayName": "VS Code Screensaver",
   "description": "Beautiful relaxing animated scenes for VS Code",
-  "publisher": "MH Farzin",
-  "version": "0.0.1",
+  "publisher": "MhFarzin",
+  "version": "0.1.2",
   "icon": "assets/icons/icon.png",
+  "keywords": [
+    "screensaver",
+    "animation",
+    "animated",
+    "stars",
+    "starfield",
+    "sky",
+    "airplane",
+    "pixi",
+    "ambient"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/mhfarzin/vscode-screensaver"
@@ -14,10 +25,10 @@
   },
   "homepage": "https://github.com/mhfarzin/vscode-screensaver",
   "engines": {
-    "vscode": "^1.125.0"
+    "vscode": "^1.85.0"
   },
   "categories": [
-    "Other"
+    "Visualization"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -32,7 +43,7 @@
           ],
           "description": "The screensaver screen to display.",
           "scope": "window",
-           "default": "sky-pilot"
+          "default": "sky-pilot"
         }
       }
     },
@@ -74,7 +85,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.13.3",
-    "@types/vscode": "^1.125.0",
+    "@types/vscode": "^1.85.0",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.0.0",
     "eslint": "^10.5.0",
