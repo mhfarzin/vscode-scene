@@ -1,7 +1,7 @@
 /**
  * BaseScreen.ts
  * ---------------------------------------------------------------------------
- * Abstract base class for all screensaver screens.
+ * Abstract base class for all scene screens.
  *
  * Every screen implements the same lifecycle:
  *   1. `init()`    — one-time setup (spawn objects, load state, etc.)
@@ -28,7 +28,7 @@ export interface ScreenConfig {
 }
 
 /**
- * Abstract base class for all screensaver screens.
+ * Abstract base class for all scene screens.
  *
  * Subclasses must implement `init`, `update`, `render`, `resize`, and `dispose`.
  * Canvas2D-based screens use the lazy `ctx` getter; Pixi-based screens

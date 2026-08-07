@@ -1,20 +1,20 @@
 /**
- * ScreensaverPanel.ts
+ * ScenePanel.ts
  * ---------------------------------------------------------------------------
- * WebviewViewProvider for the screensaver's Explorer-sidebar view.
+ * WebviewViewProvider for the scene's Explorer-sidebar view.
  *
  * Responsibilities:
  *   - Provides the HTML shell (a full-viewport <canvas>)
- *   - Injects `window.__ASSETS_BASE_URI__` so each screen can build
+ *   - Injects `window.__ASSETS_BASE_URI__` so each scene can build
  *     absolute webview URLs for its own assets
- *   - Reads the `vscode-screensaver.screen` setting and injects it into the
+ *   - Reads the `vscode-scene.screen` setting and injects it into the
  *     webview via `window.__SCREEN_TYPE__`
  *   - Listens for setting changes and notifies the webview so the active
- *     screen switches live without reloading the view
+ *     scene switches live without reloading the view
  *   - Loads the compiled `panel.js` client script
  *
- * IMPORTANT: This file must stay screen-agnostic. Do NOT add screen-specific
- * logic or asset URIs here — every screen manages its own assets via
+ * IMPORTANT: This file must stay scene-agnostic. Do NOT add scene-specific
+ * logic or asset URIs here — every scene manages its own assets via
  * `__ASSETS_BASE_URI__` + relative path.
  *
  * This file runs in the extension host (Node.js).
@@ -23,16 +23,16 @@
 
 import * as vscode from "vscode";
 
-/** The screen types selectable in the `vscode-screensaver.screen` setting. */
-const VALID_SCREEN_TYPES = ['stars', 'sky-pilot'];
+/** The scene types selectable in the `vscode-scene.screen` setting. */
+const VALID_SCENE_TYPES = ['stars', 'sky-pilot'];
 
-/** Default screen used when the setting is missing or invalid. */
-const DEFAULT_SCREEN_TYPE = 'sky-pilot';
+/** Default scene used when the setting is missing or invalid. */
+const DEFAULT_SCENE_TYPE = 'sky-pilot';
 
 /**
- * Provides the webview view for the screensaver.
+ * Provides the webview view for the scene.
  */
-export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
+export class SceneViewProvider implements vscode.WebviewViewProvider {
     /** Reference to the currently active webview view. */
     private _view?: vscode.WebviewView;
 
@@ -60,7 +60,7 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
         // Webview security & resource settings:
         // - enableScripts: the client script needs JS to run
         // - localResourceRoots: allow serving from `dist/` (bundle)
-        //   and `assets/` (images used by screens)
+        //   and `assets/` (images used by scenes)
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [
@@ -69,13 +69,13 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
             ],
         };
 
-        // Listen for changes to the selected screen setting and push the new
-        // value to the webview so it can switch screens live.
+        // Listen for changes to the selected scene setting and push the new
+        // value to the webview so it can switch scenes live.
         this._settingsListener = vscode.workspace.onDidChangeConfiguration((e) => {
-            if (!e.affectsConfiguration('vscode-screensaver.screen')) {
+            if (!e.affectsConfiguration('vscode-scene.screen')) {
                 return;
             }
-            this._postScreenType();
+            this._postSceneType();
         });
         webviewView.onDidDispose(() => {
             this._settingsListener?.dispose();
@@ -85,8 +85,8 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
         // Inject the HTML shell.
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-        // Push the initial screen type (the latest setting value).
-        this._postScreenType();
+        // Push the initial scene type (the latest setting value).
+        this._postSceneType();
     }
 
     /** Cleans up the view when the webview is closed. */
@@ -95,45 +95,45 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
     }
 
     /**
-     * Reads the `vscode-screensaver.screen` setting and posts the selected
-     * screen type string to the webview.
+     * Reads the `vscode-scene.screen` setting and posts the selected
+     * scene type string to the webview.
      *
-     * The client uses this value to create the active screen (initial) and
-     * to switch screens live when the setting changes.
+     * The client uses this value to create the active scene (initial) and
+     * to switch scenes live when the setting changes.
      */
-    private _postScreenType() {
+    private _postSceneType() {
         if (!this._view) {
             return;
         }
 
-        const screenType = this._getScreenType();
+        const sceneType = this._getSceneType();
 
         void this._view.webview.postMessage({
             type: 'screenType',
-            value: screenType,
+            value: sceneType,
         });
     }
 
     /**
-     * Reads and validates the `vscode-screensaver.screen` setting.
+     * Reads and validates the `vscode-scene.screen` setting.
      *
-     * @returns the selected screen type, or the default when missing/invalid
+     * @returns the selected scene type, or the default when missing/invalid
      */
-    private _getScreenType(): string {
-        const config = vscode.workspace.getConfiguration('vscode-screensaver');
-        const screenType = config.get<string>('screen', DEFAULT_SCREEN_TYPE);
-        return VALID_SCREEN_TYPES.includes(screenType) ? screenType : DEFAULT_SCREEN_TYPE;
+    private _getSceneType(): string {
+        const config = vscode.workspace.getConfiguration('vscode-scene');
+        const sceneType = config.get<string>('screen', DEFAULT_SCENE_TYPE);
+        return VALID_SCENE_TYPES.includes(sceneType) ? sceneType : DEFAULT_SCENE_TYPE;
     }
 
     /**
      * Builds the HTML document for the webview.
      *
      * Contains:
-     *   - A full-viewport <canvas id="canvas"> for the screens
+     *   - A full-viewport <canvas id="canvas"> for the scenes
      *   - An inline script that sets `window.__ASSETS_BASE_URI__`
      *     to the webview URI of the extension's `assets/` folder
      *   - An inline script that sets `window.__SCREEN_TYPE__` to the
-     *     user's selected screen type from the settings
+     *     user's selected scene type from the settings
      *   - A script tag loading the compiled `panel.js` bundle
      *
      * @param webview - the webview whose URIs are used in the HTML
@@ -145,21 +145,21 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
             vscode.Uri.joinPath(this._extensionUri, "dist", "panel.js"),
         );
 
-        // URI of the assets folder — exposed to screens as a global.
+        // URI of the assets folder — exposed to scenes as a global.
         const assetsUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this._extensionUri, "assets"),
         );
 
-        // Current screen type from the user setting — exposed to the client
-        // as a global so panel.ts can pick the right screen at startup.
-        const safeType = this._getScreenType();
+        // Current scene type from the user setting — exposed to the client
+        // as a global so panel.ts can pick the right scene at startup.
+        const safeType = this._getSceneType();
 
         return `<!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>VS Code Screensaver</title>
+            <title>VS Code Scene</title>
             <style>
                 html, body {
                     margin: 0;
@@ -184,7 +184,7 @@ export class ScreensaverViewProvider implements vscode.WebviewViewProvider {
             <div class="container">
                 <canvas id="canvas"></canvas>
             </div>
-            <!-- 1) Expose assets folder URI + selected screen type -->
+            <!-- 1) Expose assets folder URI + selected scene type -->
             <script>
                 window.__ASSETS_BASE_URI__ = "${assetsUri}";
                 window.__SCREEN_TYPE__ = "${safeType}";

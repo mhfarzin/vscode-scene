@@ -1,7 +1,7 @@
 /**
  * serve-test.mjs
  * ---------------------------------------------------------------------------
- * Standalone static server for the screensaver TEST page only.
+ * Standalone static server for the scene TEST page only.
  *
  * This script is intentionally SEPARATE from the extension itself:
  *   - It does NOT touch any code under src/host or src/webview
@@ -102,7 +102,7 @@ server.listen(PORT, HOST, () => {
     const skyUrl = `http://${HOST}:${PORT}/test.html?screen=sky-pilot`;
     console.log('');
     console.log('  ════════════════════════════════════════════════════════');
-    console.log('   VS Code Screensaver — Standalone Test Server');
+    console.log('   VS Code Scene — Standalone Test Server');
     console.log('  ════════════════════════════════════════════════════════');
     console.log(`   Stars    → ${starsUrl}`);
     console.log(`   SkyPilot → ${skyUrl}`);

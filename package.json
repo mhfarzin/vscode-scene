@@ -1,12 +1,13 @@
 {
-  "name": "vscode-screensaver",
-  "displayName": "VS Code Screensaver",
+  "name": "vscode-scene",
+  "displayName": "VS Code Scene",
   "description": "Beautiful relaxing animated scenes for VS Code",
-  "publisher": "MhFarzin",
-  "version": "0.1.2",
+  "publisher": "mh-farzin",
+  "version": "0.1.1",
+  "license": "MIT",
   "icon": "assets/icons/icon.png",
   "keywords": [
-    "screensaver",
+    "scene",
     "animation",
     "animated",
     "stars",
@@ -18,12 +19,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/mhfarzin/vscode-screensaver"
+    "url": "https://github.com/mhfarzin/vscode-scene"
   },
   "bugs": {
-    "url": "https://github.com/mhfarzin/vscode-screensaver/issues"
+    "url": "https://github.com/mhfarzin/vscode-scene/issues"
   },
-  "homepage": "https://github.com/mhfarzin/vscode-screensaver",
+  "homepage": "https://github.com/mhfarzin/vscode-scene",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -33,29 +34,35 @@
   "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
-      "title": "VS Code Screensaver",
+      "title": "VS Code Scene",
       "properties": {
-        "vscode-screensaver.screen": {
+        "vscode-scene.screen": {
           "type": "string",
           "enum": [
             "stars",
             "sky-pilot"
           ],
-          "description": "The screensaver screen to display.",
+          "description": "The scene to display.",
           "scope": "window",
           "default": "sky-pilot"
+        },
+        "vscode-scene.enabled": {
+          "type": "boolean",
+          "description": "Whether the scene view is shown in the Explorer.",
+          "scope": "window",
+          "default": true
         }
       }
     },
     "commands": [
       {
-        "command": "vscode-screensaver.start",
-        "title": "VS Code Screensaver: Start",
+        "command": "vscode-scene.start",
+        "title": "VS Code Scene: Start",
         "icon": "$(play)"
       },
       {
-        "command": "vscode-screensaver.stop",
-        "title": "VS Code Screensaver: Stop",
+        "command": "vscode-scene.stop",
+        "title": "VS Code Scene: Stop",
         "icon": "$(stop)"
       }
     ],
@@ -63,9 +70,10 @@
       "explorer": [
         {
           "type": "webview",
-          "id": "vscode-screensaver.view",
-          "name": "VS Code Screensaver",
-          "icon": ""
+          "id": "vscode-scene.view",
+          "name": "VS Code Scene",
+          "icon": "",
+          "when": "config.vscode-scene.enabled"
         }
       ]
     }

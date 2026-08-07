@@ -1,7 +1,7 @@
 /**
  * StarsScreen.ts
  * ---------------------------------------------------------------------------
- * A pure Canvas2D screensaver scene (no Pixi.js).
+ * A pure Canvas2D scene (no Pixi.js).
  *
  * Renders a full night-sky scene:
  *   - Deep gradient sky with drifting nebula clouds

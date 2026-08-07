@@ -4,13 +4,13 @@
  * Client-side script running inside the webview.
  *
  * Responsibilities:
- *   - Finds the <canvas> element provided by ScreensaverPanel.ts's HTML
+ *   - Finds the <canvas> element provided by ScenePanel.ts's HTML
  *   - Sizes the canvas to fill the webview
  *   - Reads the selected screen type (injected by the host as
  *     `window.__SCREEN_TYPE__`) and instantiates it via the ScreenFactory
  *   - Starts the screen's animation loop
  *   - Listens for `screenType` messages from the host and switches screens
- *     live when the user changes the `vscode-screensaver.screen` setting
+ *     live when the user changes the `vscode-scene.screen` setting
  *   - Handles window resizing by forwarding new dimensions to the screen
  *
  * When switching screens, the OLD canvas element is fully removed from the
@@ -18,12 +18,12 @@
  * leftover renderer state (e.g. Pixi canvas buffers, child elements, stale
  * attributes) — the new screen always starts from a completely clean slate.
  *
- * NOTE: `window.__ASSETS_BASE_URI__` is injected by ScreensaverPanel.ts
+ * NOTE: `window.__ASSETS_BASE_URI__` is injected by ScenePanel.ts
  * and is used by individual screens to build asset URLs.
  * ---------------------------------------------------------------------------
  */
 
-// VS Code Screensaver - Panel script
+// VS Code Scene - Panel script
 /// <reference lib="dom" />
 
 import { ScreenType } from './screens/ScreenType';
@@ -145,7 +145,7 @@ function switchToScreen(type: ScreenType) {
     // `start()` may return a Promise (async screens). Handle errors if so.
     const result = screen.start();
     if (result instanceof Promise) {
-        result.catch((err) => console.error('[Screensaver] Screen start error:', err));
+        result.catch((err) => console.error('[Scene] Screen start error:', err));
     }
 }
 

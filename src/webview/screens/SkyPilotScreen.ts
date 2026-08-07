@@ -1,7 +1,7 @@
 /**
  * SkyPilotScreen.ts
  * ---------------------------------------------------------------------------
- * A Pixi.js-based screensaver scene featuring:
+ * A Pixi.js-based scene featuring:
  *   1. A light-blue sky background
  *   2. Procedurally generated drifting clouds
  *   3. Colorful airplanes (Blue/Green/Red/Yellow) that fly across the screen
@@ -356,7 +356,7 @@ function cloudToGraphics(cloud: CloudData): Container {
 // --------------------------------------------------------------------------
 
 /**
- * SkyPilotScreen — the main screensaver scene.
+ * SkyPilotScreen — the main scene.
  *
  * Renders a sky-blue background with procedurally generated drifting
  * clouds and periodically spawning airplanes flying across the screen.

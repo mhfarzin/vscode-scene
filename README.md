@@ -1,10 +1,10 @@
-# VS Code Screensaver ✨
+# VS Code Scene ✨
 
 Bring beautiful animated scenes to your VS Code Explorer sidebar.
 
 Transform your editor into a relaxing, living workspace with smooth animated scenes. Watch twinkling stars drift across a peaceful night sky or enjoy colorful airplanes gliding through soft clouds—all without leaving VS Code.
 
-Whether you're coding, taking a short break, or simply want a more enjoyable workspace, VS Code Screensaver adds subtle motion to your Explorer sidebar.
+Whether you're coding, taking a short break, or simply want a more enjoyable workspace, VS Code Scene adds subtle motion to your Explorer sidebar.
 
 ---
 
@@ -35,15 +35,15 @@ A Pixi.js-powered sky scene featuring **procedurally generated drifting clouds**
 ## 🖱️ How to Use
 
 1. Open the **Explorer** view.
-2. Locate the **Screensaver** panel at the bottom of the Explorer.
+2. Locate the **Scene** panel at the bottom of the Explorer.
 3. Enjoy the animation—it starts automatically.
 
 You can also use the Command Palette (`Ctrl+Shift+P`):
 
 | Command | Description |
 |---|---|
-| **VS Code Screensaver: Start** | Opens the Explorer and displays the Screensaver panel |
-| **VS Code Screensaver: Stop** | Closes the Explorer sidebar and hides the Screensaver |
+| **VS Code Scene: Start** | Opens the Explorer and displays the Scene panel |
+| **VS Code Scene: Stop** | Closes the Explorer sidebar and hides the Scene |
 
 ---
 
@@ -53,23 +53,24 @@ This extension contributes the following setting:
 
 | Setting | Description | Default |
 |---|---|---|
-| `vscode-screensaver.screen` | Select the scene to display (`stars` or `sky-pilot`) | `sky-pilot` |
+| `vscode-scene.screen` | Select the scene to display (`stars` or `sky-pilot`) | `sky-pilot` |
+| `vscode-scene.enabled` | Whether the Scene view is shown in the Explorer | `true` |
 
-Change the active scene from **Settings → Extensions → Screensaver**. The animation updates instantly—no reload required.
+Change the active scene from **Settings → Extensions → Scene**. The animation updates instantly—no reload required.
 
 ---
 
 ## ⚡ Performance
 
-Animations are rendered only while the Screensaver view is visible.
+Animations are rendered only while the Scene view is visible.
 
-Use the **VS Code Screensaver: Stop** command when you do not need the animation, especially on systems with limited resources.
+Use the **VS Code Scene: Stop** command when you do not need the animation, especially on systems with limited resources.
 
 ---
 
 ## 🔒 Privacy
 
-VS Code Screensaver does not collect personal data, track users, or send data to external services.
+VS Code Scene does not collect personal data, track users, or send data to external services.
 
 ---
 
@@ -118,8 +119,8 @@ This project is licensed under the [MIT License](LICENSE).
 Found a bug or have an idea for a new scene?
 
 Open an issue on GitHub:
-https://github.com/mhfarzin/vscode-screensaver/issues
+https://github.com/mhfarzin/vscode-scene/issues
 
 --- -->
 
-Enjoy your screensaver! ✨
+Enjoy your scenes! ✨

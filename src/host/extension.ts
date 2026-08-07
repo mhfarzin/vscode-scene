@@ -1,21 +1,21 @@
 /**
  * extension.ts
  * ---------------------------------------------------------------------------
- * Entry point for the vscode-screensaver extension.
+ * Entry point for the vscode-scene extension.
  *
  * Responsibilities:
- *   - Registers the WebviewViewProvider that renders the screensaver
+ *   - Registers the WebviewViewProvider that renders the scene
  *     in the Explorer sidebar
- *   - Registers `vscode-screensaver.start` / `vscode-screensaver.stop`
+ *   - Registers `vscode-scene.start` / `vscode-scene.stop`
  *     commands that show/hide the sidebar
  *
- * This file runs in the extension host (Node.js). All screensaver
+ * This file runs in the extension host (Node.js). All scene
  * rendering lives client-side in `src/webview/`.
  * ---------------------------------------------------------------------------
  */
 
 import * as vscode from 'vscode';
-import { ScreensaverViewProvider } from './ScreensaverPanel';
+import { SceneViewProvider } from './ScenePanel';
 
 /**
  * Called once when the extension is activated.
@@ -24,26 +24,29 @@ import { ScreensaverViewProvider } from './ScreensaverPanel';
  * @param context - extension context (subscriptions, workspace state, etc.)
  */
 export function activate(context: vscode.ExtensionContext) {
-    console.log('VS Code Screensaver is active!');
+    console.log('VS Code Scene is active!');
 
     // Register the webview view provider in the explorer sidebar.
     // `retainContextWhenHidden` keeps the animation running when
     // the sidebar is collapsed/restored.
-    const provider = new ScreensaverViewProvider(context.extensionUri);
+    const provider = new SceneViewProvider(context.extensionUri);
     context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider('vscode-screensaver.view', provider, {
+        vscode.window.registerWebviewViewProvider('vscode-scene.view', provider, {
             webviewOptions: { retainContextWhenHidden: true }
         })
     );
 
-    // Command: show the screensaver by opening the Explorer.
-    const startCommand = vscode.commands.registerCommand('vscode-screensaver.start', () => {
-        vscode.commands.executeCommand('workbench.view.explorer');
+    // Command: enable the scene permanently and show it in the Explorer.
+    const startCommand = vscode.commands.registerCommand('vscode-scene.start', async () => {
+        await vscode.workspace.getConfiguration('vscode-scene')
+            .update('enabled', true, vscode.ConfigurationTarget.Global);
+        await vscode.commands.executeCommand('workbench.view.explorer');
     });
 
-    // Command: stop the screensaver by closing the sidebar.
-    const stopCommand = vscode.commands.registerCommand('vscode-screensaver.stop', () => {
-        vscode.commands.executeCommand('workbench.action.closeSidebar');
+    // Command: disable the scene permanently (view disappears from Explorer).
+    const stopCommand = vscode.commands.registerCommand('vscode-scene.stop', async () => {
+        await vscode.workspace.getConfiguration('vscode-scene')
+            .update('enabled', false, vscode.ConfigurationTarget.Global);
     });
 
     // Both commands + the provider are disposed automatically on deactivation.
