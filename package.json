@@ -3,7 +3,7 @@
   "displayName": "VS Code Scene",
   "description": "Beautiful relaxing animated scenes for VS Code",
   "publisher": "mh-farzin",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "license": "MIT",
   "icon": "assets/icons/icon.png",
   "keywords": [
@@ -15,6 +15,8 @@
     "sky",
     "airplane",
     "pixi",
+    "aquarium",
+    "fish",
     "ambient"
   ],
   "repository": {
@@ -40,7 +42,8 @@
           "type": "string",
           "enum": [
             "stars",
-            "sky-pilot"
+            "sky-pilot",
+            "aquarium"
           ],
           "description": "The scene to display.",
           "scope": "window",

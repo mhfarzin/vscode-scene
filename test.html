@@ -29,14 +29,14 @@
         <canvas id="canvas"></canvas>
     </div>
     <script>
-        // ===== Reads the screen from the query string: ?screen=stars | ?screen=sky-pilot =====
+        // ===== Reads the screen from the query string: ?screen=stars | ?screen=sky-pilot | ?screen=aquarium =====
         (function () {
             const params = new URLSearchParams(window.location.search);
             // Default matches the extension's default: sky-pilot.
             const screen = params.get('screen') || 'sky-pilot';
 
-            // Valid types (mirrors src/host/ScreensaverPanel.ts VALID_SCREEN_TYPES)
-            const valid = ['stars', 'sky-pilot'];
+            // Valid types (mirrors src/host/ScenePanel.ts VALID_SCENE_TYPES)
+            const valid = ['stars', 'sky-pilot', 'aquarium'];
             window.__SCREEN_TYPE__ = valid.includes(screen) ? screen : 'sky-pilot';
 
             // Assets folder — used by screens that load images (owl, planes).

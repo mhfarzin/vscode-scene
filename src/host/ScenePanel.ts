@@ -24,7 +24,7 @@
 import * as vscode from "vscode";
 
 /** The scene types selectable in the `vscode-scene.screen` setting. */
-const VALID_SCENE_TYPES = ['stars', 'sky-pilot'];
+const VALID_SCENE_TYPES = ['stars', 'sky-pilot', 'aquarium'];
 
 /** Default scene used when the setting is missing or invalid. */
 const DEFAULT_SCENE_TYPE = 'sky-pilot';

@@ -52,6 +52,8 @@ function toScreenType(value: string): ScreenType {
             return ScreenType.Stars;
         case ScreenType.SkyPilot:
             return ScreenType.SkyPilot;
+        case ScreenType.Aquarium:
+            return ScreenType.Aquarium;
         default:
             return ScreenType.SkyPilot;
     }

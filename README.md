@@ -2,7 +2,7 @@
 
 Bring beautiful animated scenes to your VS Code Explorer sidebar.
 
-Transform your editor into a relaxing, living workspace with smooth animated scenes. Watch twinkling stars drift across a peaceful night sky or enjoy colorful airplanes gliding through soft clouds—all without leaving VS Code.
+Transform your editor into a relaxing, living workspace with smooth animated scenes. Watch twinkling stars drift across a peaceful night sky, enjoy colorful airplanes gliding through soft clouds, or relax with cute cartoon fish swimming in a bubbling aquarium—all without leaving VS Code.
 
 Whether you're coding, taking a short break, or simply want a more enjoyable workspace, VS Code Scene adds subtle motion to your Explorer sidebar.
 
@@ -12,11 +12,15 @@ Whether you're coding, taking a short break, or simply want a more enjoyable wor
 
 ### ✈️ SkyPilot
 
-![SkyPilot Demo](https://i.imgur.com/aPbSsMg.gif)
+![SkyPilot Demo](https://codeberg.org/mhfarzin/assets/raw/branch/main/vscode-scene/sky-pilot.gif)
 
 ### 🌟 Stars
 
-![Stars Demo](https://i.imgur.com/dISVtMh.gif)
+![Stars Demo](https://codeberg.org/mhfarzin/assets/raw/branch/main/vscode-scene/stars.gif)
+
+### 🐠 Aquarium
+
+![Aquarium Demo](https://codeberg.org/mhfarzin/assets/raw/branch/main/vscode-scene/aquarium.gif)
 
 ---
 
@@ -29,6 +33,10 @@ A pure Canvas2D animated starfield featuring **200 twinkling stars** that slowly
 ### ✈️ SkyPilot
 
 A Pixi.js-powered sky scene featuring **procedurally generated drifting clouds** and **colorful airplanes** (Blue, Green, Red, and Yellow) flying smoothly across the screen with spinning propellers.
+
+### 🐠 Aquarium
+
+A pure Canvas2D fish tank featuring **6 cartoon fish** (one of each sprite type) swimming around with **animated wagging tails**, bubbles blown from each fish's mouth, a tiled background, and gentle shimmering caustics.
 
 ---
 
@@ -53,7 +61,7 @@ This extension contributes the following setting:
 
 | Setting | Description | Default |
 |---|---|---|
-| `vscode-scene.screen` | Select the scene to display (`stars` or `sky-pilot`) | `sky-pilot` |
+| `vscode-scene.screen` | Select the scene to display (`stars`, `sky-pilot`, or `aquarium`) | `sky-pilot` |
 | `vscode-scene.enabled` | Whether the Scene view is shown in the Explorer | `true` |
 
 Change the active scene from **Settings → Extensions → Scene**. The animation updates instantly—no reload required.
@@ -82,29 +90,16 @@ No additional dependencies or configuration are required.
 
 ## 🎨 Icon
 
-The extension icon combines both available scenes: a deep night sky with a glowing moon and stars alongside a tiny airplane flying across the horizon.
+The extension icon combines the available scenes: a deep night sky with a glowing moon and stars alongside a tiny airplane flying across the horizon.
 
 ---
 
-<!-- ## 🚀 Development
+## Credits
 
-```bash
-npm install
-npm run compile
-npm run watch
-npm test
-```
+This extension uses assets from the following creators:
 
-Launch the Extension Development Host by pressing **F5** in VS Code.
-
----
-
-## 📦 Publishing
-
-```bash
-npx @vscode/vsce package
-npx @vscode/vsce publish
-```
+* **Graphics & Icons:** Designed by [Freepik](https://www.freepik.com)
+* **Game Assets & UI Elements:** Created by [Kenney](https://kenney.nl)
 
 ---
 
@@ -121,6 +116,6 @@ Found a bug or have an idea for a new scene?
 Open an issue on GitHub:
 https://github.com/mhfarzin/vscode-scene/issues
 
---- -->
+---
 
 Enjoy your scenes! ✨

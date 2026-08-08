@@ -18,4 +18,7 @@ export enum ScreenType {
 
     /** Sky scene: light-blue sky, drifting clouds, flying airplanes (Pixi.js). */
     SkyPilot = 'sky-pilot',
+
+    /** Fish tank: cute cartoon fish swimming in a bubbling aquarium (Canvas2D). */
+    Aquarium = 'aquarium',
 }

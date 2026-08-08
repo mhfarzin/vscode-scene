@@ -13,6 +13,7 @@ import { ScreenType } from './ScreenType';
 import { ScreenConfig, BaseScreen } from './BaseScreen';
 import { StarsScreen } from './StarsScreen';
 import { SkyPilotScreen } from './SkyPilotScreen';
+import { AquariumScreen } from './AquariumScreen';
 
 /**
  * Creates a screen instance for the given configuration.
@@ -31,6 +32,9 @@ export function createScreen(
 
         case ScreenType.SkyPilot:
             return new SkyPilotScreen(canvas, config);
+
+        case ScreenType.Aquarium:
+            return new AquariumScreen(canvas, config);
 
         // Unknown type → fall back to the default Stars screen.
         default:

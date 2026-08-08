@@ -4,6 +4,19 @@ All notable changes to the "vscode-scene" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [0.2.0]
 
-- Initial release
+### Added
+- New **Aquarium** scene: a pure Canvas2D fish tank with 6 cartoon fish sprites
+  (one of each type), animated wagging tails, fish-blown bubbles, a tiled
+  background image, and gentle shimmering caustics.
+
+## [0.1.1] - Initial release
+
+### Added
+- **Stars** scene: a pure Canvas2D starfield with twinkling stars, a glowing
+  moon, shooting stars, and an animated bird.
+- **SkyPilot** scene: a Pixi.js sky with procedurally generated clouds and
+  colorful airplanes with spinning propellers.
+- Explorer webview panel with live scene switching via the
+  `vscode-scene.screen` setting.
