@@ -67,6 +67,11 @@
         "command": "vscode-scene.stop",
         "title": "VS Code Scene: Stop",
         "icon": "$(stop)"
+      },
+      {
+        "command": "vscode-scene.selectScene",
+        "title": "VS Code Scene: Select Scene",
+        "icon": "$(symbol-color)"
       }
     ],
     "views": {
