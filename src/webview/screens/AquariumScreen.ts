@@ -8,7 +8,7 @@
  *     tiled to fill the whole canvas. The image is designed to repeat
  *     seamlessly — adjacent tiles line up perfectly on both axes.
  *   - A subtle shimmering light caustic overlay on top of the water
- *   - Exactly 6 cartoon fish sprites (`assets/screens/aquarium/fish_1..6.png`)
+ *   - Exactly 6 cartoon fish sprites (`assets/screens/aquarium/fish-1..6.png`)
  *     swimming around — one of each type, no duplicates. They wander inside
  *     the tank, turn around at the walls, bob up and down, and flip to face
  *     their movement direction.
@@ -22,12 +22,12 @@
  *
  * Tail-neck data was measured from the actual PNGs (column-alpha profiles).
  * Each entry is a fraction of the sprite width/height:
- *   fish_1: neck x=0.750 y=0.706
- *   fish_2: neck x=0.767 y=0.428
- *   fish_3: neck x=0.716 y=0.567
- *   fish_4: neck x=0.830 y=0.529
- *   fish_5: neck x=0.723 y=0.498
- *   fish_6: neck x=0.754 y=0.549
+ *   fish-1: neck x=0.750 y=0.706
+ *   fish-2: neck x=0.767 y=0.428
+ *   fish-3: neck x=0.716 y=0.567
+ *   fish-4: neck x=0.830 y=0.529
+ *   fish-5: neck x=0.723 y=0.498
+ *   fish-6: neck x=0.754 y=0.549
  *
  * If a background image fails to load a plain light-blue fill is drawn.
  *
@@ -149,7 +149,7 @@ interface Bubble {
  */
 const NUM_FISH = 6;
 
-/** Number of fish sprite images available (`assets/screens/aquarium/fish_N.png`). */
+/** Number of fish sprite images available (`assets/screens/aquarium/fish-N.png`). */
 const FISH_IMAGE_COUNT = 6;
 
 /**
@@ -267,10 +267,10 @@ export class AquariumScreen extends BaseScreen {
         const sprites: FishSprite[] = [];
         for (let i = 1; i <= FISH_IMAGE_COUNT; i++) {
             try {
-                const img = await this._loadImage(`screens/aquarium/fish_${i}.png`);
+                const img = await this._loadImage(`screens/aquarium/fish-${i}.png`);
                 sprites.push(this._splitTail(img, TAIL_NECKS[i] ?? { x: 0.75, y: 0.5 }));
             } catch (err) {
-                console.error(`[Aquarium] Failed to load fish_${i}.png`, err);
+                console.error(`[Aquarium] Failed to load fish-${i}.png`, err);
             }
             // Bail out if the screen was disposed while loading.
             if (this.disposed) {

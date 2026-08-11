@@ -41,9 +41,9 @@
         "vscode-scene.screen": {
           "type": "string",
           "enum": [
-            "stars",
             "sky-pilot",
-            "aquarium"
+            "aquarium",
+            "stars"
           ],
           "description": "The scene to display.",
           "scope": "window",

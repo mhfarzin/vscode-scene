@@ -36,7 +36,7 @@ import { BalancedDeck } from '../utils/random';
  * Builds a fully-qualified asset URL from a path relative to `assets/`.
  * Falls back to an empty string if `__ASSETS_BASE_URI__` is not available.
  *
- * @param relativePath - e.g. 'screens/sky-pilot/planeBlue1.png'
+ * @param relativePath - e.g. 'screens/sky-pilot/plane-blue-1.png'
  * @returns the absolute webview URL for the asset
  */
 function assetsUrl(relativePath: string): string {
@@ -51,8 +51,8 @@ function assetsUrl(relativePath: string): string {
 // Constants
 // --------------------------------------------------------------------------
 
-/** Available airplane colors. Each color has 3 propeller frames. */
-const PLANE_COLORS = ['Blue', 'Green', 'Red', 'Yellow'];
+/** Available airplane colors (lowercase — used in the kebab-case filenames). */
+const PLANE_COLORS = ['blue', 'green', 'red', 'yellow'];
 
 /** Time (ms) between propeller frame swaps → controls prop spin speed. */
 const FRAME_INTERVAL = 80;
@@ -474,11 +474,11 @@ export class SkyPilotScreen extends BaseScreen {
             let ok = true;
             for (let i = 1; i <= 3; i++) {
                 try {
-                    const url = assetsUrl(`screens/sky-pilot/plane${color}${i}.png`);
+                    const url = assetsUrl(`screens/sky-pilot/plane-${color}-${i}.png`);
                     const img = await this._loadImage(url);
                     textures.push(Texture.from(img));
                 } catch (err) {
-                    console.error(`[SkyPilot] Failed to load plane${color}${i}.png`, err);
+                    console.error(`[SkyPilot] Failed to load plane-${color}-${i}.png`, err);
                     ok = false;
                     break;
                 }

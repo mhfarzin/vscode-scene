@@ -37,16 +37,16 @@ same measurement works no matter what resolution the PNG is.
 HOW TO USE (ADD A NEW FISH)
 --------------------------------------------------------------------------------
 1. Drop your new fish sprite into:
-       assets/screens/aquarium/fish_N.png
-   (where N is the next number, e.g. 7 if you already have fish_1..fish_6)
+       assets/screens/aquarium/fish-N.png
+   (where N is the next number, e.g. 7 if you already have fish-1..fish-6)
 
 2. Run the analyzer on that file:
-       python scripts/analyze-fish-tail.py assets/screens/aquarium/fish_7.png
+       python scripts/analyze-fish-tail.py assets/screens/aquarium/fish-7.png
 
 3. Read the console output. It will print the exact fraction values, e.g.:
-       fish_7.png: neckX=0.733 (0.733 of width)  neckY=0.541 (0.541 of height)
+       fish-7.png: neckX=0.733 (0.733 of width)  neckY=0.541 (0.541 of height)
 
-4. (Optional) Look at the generated debug image  neck_debug_fish_7.png  to
+4. (Optional) Look at the generated debug image  neck_debug_fish-7.png  to
    visually confirm the red cut line lands on the narrowest part of the body.
 
 5. Open  src/webview/screens/AquariumScreen.ts  and add an entry to the
@@ -162,7 +162,7 @@ def find_neck(heights: list[int]) -> Tuple[int, int]:
     * Scan from left to right for the FIRST column whose height drops below
       30% of the sprite's maximum height (the "neck"). A 45% threshold was
       too shallow — it caught shallow dips on the tail fin itself (e.g.
-      fish_1 at x≈0.71), so we require a DEEP valley (≤30% of max).
+      fish-1 at x≈0.71), so we require a DEEP valley (≤30% of max).
     * Inside the dip, find the very bottom (the narrowest column).
     * Verify the tail actually fans back out afterwards: any column within the
       next ~35px must be at least TWICE the dip's own height. This
@@ -170,7 +170,7 @@ def find_neck(heights: list[int]) -> Tuple[int, int]:
       tapered tail tip. (A fixed 60%-of-max threshold fails here because the
       tail fins of the built-in sprites only re-open to ~40-50% of max.)
     * If no such valley exists (e.g. a fish whose tail simply tapers to a
-      point with no fan — like fish_4), fall back to the LAST column that
+      point with no fan — like fish-4), fall back to the LAST column that
       still has at least 40% of the max height. This lands on the shoulder
       of the body where the tail starts.
 
@@ -208,7 +208,7 @@ def find_neck(heights: list[int]) -> Tuple[int, int]:
     # 2) Fallback: the "shoulder" — where the tall body ends.
     #    Scan left→right and take the LAST column whose height is still at
     #    least 50% of the sprite's maximum. After that point the body clearly
-    #    narrows into the tail. This handles tapered tails (e.g. fish_4)
+    #    narrows into the tail. This handles tapered tails (e.g. fish-4)
     #    that have no fan-out.
     shoulder_x = start_x
     for x in range(start_x, width):
@@ -312,7 +312,7 @@ def format_report(result: NeckResult, action: str) -> str:
     lines.append(f"      {result.neck_frac_x}, {result.neck_frac_y}")
     lines.append("")
     lines.append("  Add with 3 decimals, e.g. inside TAIL_NECKS:")
-    lines.append(f"      {result.sprite_name.replace('fish_','').replace('.png','')}: "
+    lines.append(f"      {result.sprite_name.replace('fish-','').replace('.png','')}: "
                  f"{{ x: {result.neck_frac_x}, y: {result.neck_frac_y} }},")
     lines.append("=" * 72)
 
@@ -321,7 +321,7 @@ def format_report(result: NeckResult, action: str) -> str:
         lines.append("  → Add a new fish: 5 manual steps")
         lines.append("    1. Copy this measurement into TAIL_NECKS in AquariumScreen.ts.")
         lines.append("    2. Bump FISH_IMAGE_COUNT (e.g. 6 → 7).")
-        lines.append("    3. Make sure the file is named fish_7.png in assets/screens/aquarium/.")
+        lines.append("    3. Make sure the file is named fish-7.png in assets/screens/aquarium/.")
         lines.append("    4. npm run compile")
         lines.append("    5. Open test.html?screen=aquarium to verify the tail wags.")
     return "\n".join(lines)
@@ -336,8 +336,8 @@ def build_parser() -> argparse.ArgumentParser:
         description="Measure the tail-neck position of a fish sprite PNG "
                     "for the vscode-scene Aquarium screen.",
         epilog="Example:\n"
-               "  python scripts/analyze-fish-tail.py assets/screens/aquarium/fish_7.png\n"
-               "  python scripts/analyze-fish-tail.py assets/screens/aquarium/fish_7.png --debug\n"
+               "  python scripts/analyze-fish-tail.py assets/screens/aquarium/fish-7.png\n"
+               "  python scripts/analyze-fish-tail.py assets/screens/aquarium/fish-7.png --debug\n"
                "  python scripts/analyze-fish-tail.py --all\n",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -345,7 +345,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--all",
         action="store_true",
-        help="Analyze every fish_N.png currently in assets/screens/aquarium/ "
+        help="Analyze every fish-N.png currently in assets/screens/aquarium/ "
              "and print all their TAIL_NECKS entries at once.",
     )
     parser.add_argument(
@@ -361,14 +361,14 @@ def main(argv: Optional[list[str]] = None) -> int:
     args = build_parser().parse_args(argv)
     aquarium_dir = os.path.join("assets", "screens", "aquarium")
 
-    # If --all, gather every fish_N.png in the aquarium folder.
+    # If --all, gather every fish-N.png in the aquarium folder.
     if args.all:
         files = sorted(
             f for f in os.listdir(aquarium_dir)
-            if f.startswith("fish_") and f.endswith(".png")
+            if f.startswith("fish-") and f.endswith(".png")
         )
         if not files:
-            print(f"No fish_*.png found in {aquarium_dir}")
+            print(f"No fish-*.png found in {aquarium_dir}")
             return 1
         results = [measure_neck(os.path.join(aquarium_dir, f)) for f in files]
         results = [r for r in results if r is not None]

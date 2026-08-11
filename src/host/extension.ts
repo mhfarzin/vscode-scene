@@ -95,9 +95,9 @@ export function activate(context: vscode.ExtensionContext) {
             .get<string>('screen', 'sky-pilot');
 
         const scenes = [
-            { label: 'Stars', value: 'stars' },
             { label: 'Sky Pilot', value: 'sky-pilot' },
             { label: 'Aquarium', value: 'aquarium' },
+            { label: 'Stars', value: 'stars' },
         ];
 
         // Show the quick-pick list. The currently active scene is marked

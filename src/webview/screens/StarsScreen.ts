@@ -9,7 +9,7 @@
  *   - 90 tiny twinkling background stars
  *   - 25 vivid five-pointed stars that randomly appear, shine, and fade away
  *   - Random shooting stars (meteors) streaking across the sky with trails
- *   - An animated bird (7-frame sprites) flying from edge to edge
+ *   - An animated black bird (7-frame sprites) flying from edge to edge
  *
  * Timing rules (per AGENTS.md):
  *   - No setTimeout / setInterval. All spawn timers are driven from
@@ -158,7 +158,7 @@ const BIRD_SIZE_MAX = 134;
 /** Milliseconds per bird sprite frame → controls wing-flap speed. */
 const BIRD_FRAME_INTERVAL = 75;
 
-/** Number of bird animation frames (assets/screens/stars/1..7.png). */
+/** Number of bird animation frames (assets/screens/stars/black-bird-1..7.png). */
 const BIRD_FRAME_COUNT = 7;
 
 /** Colored star lifecycle timing (ms) — delay, fade-in, shine, fade-out. */
@@ -224,7 +224,7 @@ export class StarsScreen extends BaseScreen {
     /** Active animated birds. */
     private birds: Bird[] = [];
 
-    /** Loaded bird sprite frames (assets/screens/stars/1..7.png). */
+    /** Loaded bird sprite frames (assets/screens/stars/black-bird-1..7.png). */
     private birdFrames: HTMLImageElement[] = [];
 
     /** Accumulated time (s) — drives twinkle/nebula/shooting-star animation. */
@@ -268,8 +268,8 @@ export class StarsScreen extends BaseScreen {
     }
 
     /**
-     * Loads bird sprite frames `assets/screens/stars/1..7.png` via Image
-     * elements. Fails silently so a missing asset never crashes the scene.
+     * Loads bird sprite frames `assets/screens/stars/black-bird-1..7.png` via
+     * Image elements. Fails silently so a missing asset never crashes.
      */
     private _loadBirdFrames(): Promise<void> {
         const base = (window as any).__ASSETS_BASE_URI__ || '';
@@ -290,7 +290,7 @@ export class StarsScreen extends BaseScreen {
                     this.birdFrames[i - 1] = null as unknown as HTMLImageElement;
                     resolve();
                 };
-                img.src = `${prefix}${i}.png`;
+                img.src = `${prefix}black-bird-${i}.png`;
             }));
         }
 
