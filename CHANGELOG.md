@@ -4,6 +4,18 @@ All notable changes to the "vscode-scene" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.2.1]
+
+### Added
+- New **`vscode-scene.selectScene`** command that opens a QuickPick list of
+  all available scenes (Stars, Sky Pilot, Aquarium) so you can switch the
+  active scene instantly from the Command Palette.
+- A **status-bar icon** (bottom-right, color-wheel `$(symbol-color)`) that
+  opens the same scene picker with a single click.
+- Selecting a scene also enables the view if it was disabled (only after you
+  confirm a choice — pressing Escape makes no changes).
+- The currently active scene is marked with a checkmark in the picker.
+
 ## [0.2.0]
 
 ### Added

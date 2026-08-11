@@ -46,12 +46,15 @@ A pure Canvas2D fish tank featuring **6 cartoon fish** (one of each sprite type)
 2. Locate the **Scene** panel at the bottom of the Explorer.
 3. Enjoy the animation—it starts automatically.
 
-You can also use the Command Palette (`Ctrl+Shift+P`):
+You can also use the Command Palette (`Ctrl+Shift+P`), or click the
+**color-wheel icon** in the bottom status bar:
 
 | Command | Description |
 |---|---|
 | **VS Code Scene: Start** | Opens the Explorer and displays the Scene panel |
 | **VS Code Scene: Stop** | Closes the Explorer sidebar and hides the Scene |
+| **VS Code Scene: Select Scene** | Opens a picker to switch the active scene (Stars, Sky Pilot, Aquarium) |
+| *(status-bar icon)* | Click the 🎨 color-wheel in the bottom bar for the same scene picker |
 
 ---
 
