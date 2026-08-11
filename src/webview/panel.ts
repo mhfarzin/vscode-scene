@@ -15,8 +15,8 @@
  *
  * When switching screens, the OLD canvas element is fully removed from the
  * DOM and a BRAND-NEW canvas is created in its place. This guarantees zero
- * leftover renderer state (e.g. Pixi canvas buffers, child elements, stale
- * attributes) — the new screen always starts from a completely clean slate.
+ * leftover renderer state (e.g. buffers, child elements, stale attributes) —
+ * the new screen always starts from a completely clean slate.
  *
  * NOTE: `window.__ASSETS_BASE_URI__` is injected by ScenePanel.ts
  * and is used by individual screens to build asset URLs.
@@ -55,7 +55,7 @@ function toScreenType(value: string): ScreenType {
  *
  * A brand-new element guarantees a completely clean drawing surface:
  * any child elements, leftover paint, or stale attributes left behind by a
- * previous renderer (e.g. Pixi's canvas mode) are gone for good.
+ * previous renderer are gone for good.
  *
  * @returns the fresh canvas element
  */

@@ -6,12 +6,12 @@
  * Every screen implements the same lifecycle:
  *   1. `init()`    — one-time setup (spawn objects, load state, etc.)
  *   2. `update()`  — per-frame logic (movement, collisions, timers)
- *   3. `render()`  — per-frame drawing (canvas context or Pixi stage)
+ *   3. `render()`  — per-frame drawing (canvas context)
  *   4. `resize()`  — called when the sidebar/webview changes size
  *   5. `dispose()` — full cleanup before the screen is replaced
  *
  * `start()` boots the animation loop; `stop()` halts it.
- * `start()` may be `async` (e.g. Pixi-based screens must await app.init()).
+ * `start()` may be `async` (e.g. screens that load assets before running).
  * ---------------------------------------------------------------------------
  */
 
@@ -31,8 +31,7 @@ export interface ScreenConfig {
  * Abstract base class for all scene screens.
  *
  * Subclasses must implement `init`, `update`, `render`, `resize`, and `dispose`.
- * Canvas2D-based screens use the lazy `ctx` getter; Pixi-based screens
- * ignore it and manage their own renderer.
+ * Screens use the lazy `ctx` getter for the 2D canvas context.
  */
 export abstract class BaseScreen {
     /** The <canvas> element this screen draws onto. */
@@ -46,8 +45,7 @@ export abstract class BaseScreen {
 
     /**
      * Cached 2D context handle.
-     * Lazy — only created when a Canvas2D screen actually requests it,
-     * so Pixi-based screens never pay the cost of `getContext('2d')`.
+     * Lazy — only created when a screen actually requests it.
      */
     private _ctx: CanvasRenderingContext2D | null = null;
 
@@ -58,7 +56,6 @@ export abstract class BaseScreen {
 
     /**
      * Lazy getter for the Canvas 2D drawing context.
-     * Only intended for Canvas2D-based screens (e.g. StarsScreen).
      *
      * @returns the canvas's 2D rendering context
      */

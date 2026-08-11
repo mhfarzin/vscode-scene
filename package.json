@@ -14,7 +14,6 @@
     "starfield",
     "sky",
     "airplane",
-    "pixi",
     "aquarium",
     "fish",
     "ambient"
@@ -114,8 +113,5 @@
   "overrides": {
     "diff": "^8.0.4",
     "serialize-javascript": "^7.0.6"
-  },
-  "dependencies": {
-    "pixi.js": "^8.19.0"
   }
 }

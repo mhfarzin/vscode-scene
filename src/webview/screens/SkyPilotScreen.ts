@@ -1,7 +1,7 @@
 /**
  * SkyPilotScreen.ts
  * ---------------------------------------------------------------------------
- * A pure Canvas2D scene (no Pixi.js) featuring:
+ * A pure Canvas2D scene featuring:
  *   1. A light-blue sky background
  *   2. Procedurally generated drifting clouds
  *   3. Colorful airplanes (Blue/Green/Red/Yellow) that fly across the screen
@@ -11,7 +11,7 @@
  * generation logic mirrors the classic "fluff cloud" algorithm: a big center
  * circle + descending side circles + end circles that fill out the bottom.
  * A soft off-white shadow is drawn 6px behind each cloud, then the solid
- * white body on top (same look as the original Pixi version).
+ * white body on top.
  *
  * Planes use the 12 PNG assets (`assets/screens/sky-pilot/plane{Color}{1..3}.png`).
  * Each color has 3 propeller frames that cycle to animate the spinning prop.
@@ -23,10 +23,8 @@
  *     restoring the window can't fire a burst of planes/clouds.
  *   - Async `start()` guards against `dispose()`.
  *
- * NOTE: In the original Pixi version, velocities were expressed in
- * "px per frame". This Canvas2D version converts them to px/ms using a
- * 60 fps reference (1 px/frame @ 60fps = 0.06 px/ms), so the visual speed
- * is identical.
+ * NOTE: Velocities are expressed in px/ms using a 60 fps reference
+ * (1 px/frame @ 60fps = 0.06 px/ms).
  * ---------------------------------------------------------------------------
  */
 
@@ -328,8 +326,7 @@ function generateCloud(): CloudData {
  * Renders a sky-blue background with procedurally generated drifting
  * clouds and periodically spawning airplanes flying across the screen.
  *
- * Clouds are drawn first, planes on top — same layering as the original
- * Pixi version (cloud layer beneath plane layer).
+ * Clouds are drawn first, planes on top (cloud layer beneath plane layer).
  */
 export class SkyPilotScreen extends BaseScreen {
     /** True once `dispose()` has been called — guards async `start()`. */
@@ -601,9 +598,8 @@ export class SkyPilotScreen extends BaseScreen {
 
     /**
      * Fills one cloud shape as a SINGLE unified path — all circles plus a
-     * polygon that closes across the flat bottom base. This mirrors the
-     * original Pixi `drawCloudShape` exactly: a solid uniform fill with no
-     * gaps between the overlapping circles.
+     * polygon that closes across the flat bottom base. A solid uniform fill
+     * with no gaps between the overlapping circles.
      *
      * @param ctx      - the canvas 2D context
      * @param fluffs   - the cloud's circles (relative to the cloud origin)
@@ -620,7 +616,7 @@ export class SkyPilotScreen extends BaseScreen {
         for (const f of fluffs) {
             ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
         }
-        // Close across the flat bottom base (same as the Pixi version).
+        // Close across the flat bottom base.
         ctx.moveTo(fluffs[0].x, bottomY);
         for (const f of fluffs) {
             ctx.lineTo(f.x, f.y);
