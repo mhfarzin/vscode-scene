@@ -16,6 +16,7 @@
 
 import * as vscode from 'vscode';
 import { SceneViewProvider } from './ScenePanel';
+import { SCREEN_SETTING, SCENE_TYPES, DEFAULT_SCENE_TYPE } from '../common/scenes';
 
 /**
  * Called once when the extension is activated.
@@ -36,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    // Status-bar item (bottom-right): a fixed color-wheel icon like vscode-pets
+    // Status-bar item (bottom-right): a fixed color-wheel icon
     // that opens the scene picker when clicked. It is hidden whenever the
     // scene is disabled.
     const statusBarItem = vscode.window.createStatusBarItem(
@@ -92,25 +93,26 @@ export function activate(context: vscode.ExtensionContext) {
     const selectSceneCommand = vscode.commands.registerCommand('vscode-scene.selectScene', async () => {
         // The currently selected scene (used to mark it in the list).
         const current = vscode.workspace.getConfiguration('vscode-scene')
-            .get<string>('screen', 'sky-pilot');
+            .get<string>(SCREEN_SETTING, DEFAULT_SCENE_TYPE);
 
-        const scenes = [
-            { label: 'Sky Pilot', value: 'sky-pilot' },
-            { label: 'Aquarium', value: 'aquarium' },
-            { label: 'Stars', value: 'stars' },
-        ];
+        // Human-readable labels per scene type, shown in the QuickPick.
+        const sceneLabels: Record<string, string> = {
+            'sky-pilot': 'Sky Pilot',
+            'aquarium': 'Aquarium',
+            'stars': 'Stars',
+        };
+
+        // Build the list from the single source of truth (SCENE_TYPES).
+        const scenes = SCENE_TYPES.map((type) => ({
+            label: (type === current ? '$(check) ' : '') + (sceneLabels[type] ?? type),
+            value: type,
+        }));
 
         // Show the quick-pick list. The currently active scene is marked
         // with a checkmark so the user always knows which one is running.
-        const pick = await vscode.window.showQuickPick(
-            scenes.map((s) => ({
-                label: (s.value === current ? '$(check) ' : '') + s.label,
-                value: s.value,
-            })),
-            {
-                placeHolder: 'Select the scene to display',
-            }
-        );
+        const pick = await vscode.window.showQuickPick(scenes, {
+            placeHolder: 'Select the scene to display',
+        });
 
         // User pressed Escape (cancel) — nothing to do.
         if (!pick) {
@@ -120,7 +122,7 @@ export function activate(context: vscode.ExtensionContext) {
         // Persist the selection. ScenePanel.ts picks this up automatically
         // via onDidChangeConfiguration and the webview switches live.
         await vscode.workspace.getConfiguration('vscode-scene')
-            .update('screen', pick.value, vscode.ConfigurationTarget.Global);
+            .update(SCREEN_SETTING, pick.value, vscode.ConfigurationTarget.Global);
 
         // Only AFTER the user has picked a scene do we enable the view —
         // a disabled scene is never turned on before the user commits.

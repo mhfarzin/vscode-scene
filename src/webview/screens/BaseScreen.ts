@@ -15,7 +15,7 @@
  * ---------------------------------------------------------------------------
  */
 
-import { ScreenType } from './ScreenType';
+import { ScreenType } from '../../common/scenes';
 
 /**
  * Configuration passed to a screen at construction time.

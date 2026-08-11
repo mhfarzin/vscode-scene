@@ -26,7 +26,7 @@
 // VS Code Scene - Panel script
 /// <reference lib="dom" />
 
-import { ScreenType } from './screens/ScreenType';
+import { ScreenType, parseSceneType } from '../common/scenes';
 import { ScreenConfig, BaseScreen } from './screens/BaseScreen';
 import { createScreen } from './screens/ScreenFactory';
 
@@ -41,22 +41,13 @@ let currentScreenType: string = '';
 
 /**
  * Maps a screen-type string (from the setting/global) to the ScreenType enum.
- * Falls back to SkyPilot for unknown values so the panel never crashes.
+ * Falls back to the default scene for unknown values so the panel never crashes.
  *
  * @param value - the raw screen-type string
  * @returns the matching ScreenType enum value
  */
 function toScreenType(value: string): ScreenType {
-    switch (value) {
-        case ScreenType.Stars:
-            return ScreenType.Stars;
-        case ScreenType.SkyPilot:
-            return ScreenType.SkyPilot;
-        case ScreenType.Aquarium:
-            return ScreenType.Aquarium;
-        default:
-            return ScreenType.SkyPilot;
-    }
+    return parseSceneType(value);
 }
 
 /**
@@ -163,7 +154,7 @@ async function main() {
     }
 
     // Use the screen type injected by the host (from the user setting).
-    const initialType = (window as any).__SCREEN_TYPE__ || 'sky-pilot';
+    const initialType = (window as any).__SCREEN_TYPE__;
     switchToScreen(toScreenType(initialType));
 
     // Listen for setting changes: the host posts the new screen type and we

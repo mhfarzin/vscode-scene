@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------------------
  */
 
-import { ScreenType } from './ScreenType';
+import { ScreenType } from '../../common/scenes';
 import { ScreenConfig, BaseScreen } from './BaseScreen';
 import { StarsScreen } from './StarsScreen';
 import { SkyPilotScreen } from './SkyPilotScreen';

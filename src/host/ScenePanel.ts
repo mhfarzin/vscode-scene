@@ -22,12 +22,13 @@
  */
 
 import * as vscode from "vscode";
-
-/** The scene types selectable in the `vscode-scene.screen` setting. */
-const VALID_SCENE_TYPES = ['stars', 'sky-pilot', 'aquarium'];
-
-/** Default scene used when the setting is missing or invalid. */
-const DEFAULT_SCENE_TYPE = 'sky-pilot';
+import {
+    SCREEN_SETTING,
+    SCENE_TYPES,
+    DEFAULT_SCENE_TYPE,
+    isSceneType,
+    ScreenType,
+} from "../common/scenes";
 
 /**
  * Provides the webview view for the scene.
@@ -91,7 +92,13 @@ export class SceneViewProvider implements vscode.WebviewViewProvider {
 
     /** Cleans up the view when the webview is closed. */
     public dispose() {
-        // Dispose of the view if needed
+        // Dispose of the settings-change listener (if still active).
+        this._settingsListener?.dispose();
+        this._settingsListener = undefined;
+
+        // Drop the reference to the webview view so a disposed provider
+        // can no longer post messages to a closed/cleaned-up view.
+        this._view = undefined;
     }
 
     /**
@@ -119,10 +126,10 @@ export class SceneViewProvider implements vscode.WebviewViewProvider {
      *
      * @returns the selected scene type, or the default when missing/invalid
      */
-    private _getSceneType(): string {
+    private _getSceneType(): ScreenType {
         const config = vscode.workspace.getConfiguration('vscode-scene');
-        const sceneType = config.get<string>('screen', DEFAULT_SCENE_TYPE);
-        return VALID_SCENE_TYPES.includes(sceneType) ? sceneType : DEFAULT_SCENE_TYPE;
+        const sceneType = config.get<string>(SCREEN_SETTING, DEFAULT_SCENE_TYPE);
+        return isSceneType(sceneType) ? sceneType : DEFAULT_SCENE_TYPE;
     }
 
     /**
