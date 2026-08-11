@@ -12,6 +12,8 @@
  *   - Listens for setting changes and notifies the webview so the active
  *     scene switches live without reloading the view
  *   - Loads the compiled `panel.js` client script
+ *   - Applies a Content-Security-Policy (CSP) so only scripts/styles with
+ *     the generated nonce can run (defense-in-depth for untrusted HTML)
  *
  * IMPORTANT: This file must stay scene-agnostic. Do NOT add scene-specific
  * logic or asset URIs here — every scene manages its own assets via
@@ -29,6 +31,7 @@ import {
     isSceneType,
     ScreenType,
 } from "../common/scenes";
+import { getNonce } from "../common/nonce";
 
 /**
  * Provides the webview view for the scene.
@@ -137,6 +140,9 @@ export class SceneViewProvider implements vscode.WebviewViewProvider {
      *
      * Contains:
      *   - A full-viewport <canvas id="canvas"> for the scenes
+     *   - A Content-Security-Policy that only allows scripts/styles with
+     *     the per-view nonce, plus images from the extension + `data:`
+     *     URIs (Aquarium splits sprites via `canvas.toDataURL()`)
      *   - An inline script that sets `window.__ASSETS_BASE_URI__`
      *     to the webview URI of the extension's `assets/` folder
      *   - An inline script that sets `window.__SCREEN_TYPE__` to the
@@ -147,6 +153,10 @@ export class SceneViewProvider implements vscode.WebviewViewProvider {
      * @returns the complete HTML string
      */
     private _getHtmlForWebview(webview: vscode.Webview) {
+        // Per-view nonce — only scripts/styles carrying this nonce are
+        // allowed to run by the Content-Security-Policy below.
+        const nonce = getNonce();
+
         // URI of the compiled client bundle.
         const scriptUri = webview.asWebviewUri(
             vscode.Uri.joinPath(this._extensionUri, "dist", "panel.js"),
@@ -161,13 +171,22 @@ export class SceneViewProvider implements vscode.WebviewViewProvider {
         // as a global so panel.ts can pick the right scene at startup.
         const safeType = this._getSceneType();
 
+        // CSP:
+        // - default-src 'none'                    → block everything not listed
+        // - style-src  cspSource 'nonce-…'        → inline <style> + extension CSS
+        // - img-src    cspSource data:            → PNG sprites + toDataURL() splits
+        // - connect-src cspSource                 → lets DevTools load .js.map
+        // - font-src   cspSource                  → future fonts from the extension
+        // - script-src 'nonce-…'                  → only our inline scripts + panel.js
         return `<!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="Content-Security-Policy"
+                  content="default-src 'none'; style-src ${webview.cspSource} 'nonce-${nonce}'; img-src ${webview.cspSource} data:; connect-src ${webview.cspSource}; font-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
             <title>VS Code Scene</title>
-            <style>
+            <style nonce="${nonce}">
                 html, body {
                     margin: 0;
                     padding: 0;
@@ -192,12 +211,12 @@ export class SceneViewProvider implements vscode.WebviewViewProvider {
                 <canvas id="canvas"></canvas>
             </div>
             <!-- 1) Expose assets folder URI + selected scene type -->
-            <script>
+            <script nonce="${nonce}">
                 window.__ASSETS_BASE_URI__ = "${assetsUri}";
                 window.__SCREEN_TYPE__ = "${safeType}";
             </script>
             <!-- 2) Load the client-side panel script -->
-            <script src="${scriptUri}"></script>
+            <script nonce="${nonce}" src="${scriptUri}"></script>
         </body>
         </html>`;
     }
