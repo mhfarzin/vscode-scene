@@ -4,6 +4,17 @@ All notable changes to the "vscode-scene" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.2.3]
+
+### Changed
+- **README updated** — SkyPilot described as pure Canvas2D (no Pixi mention),
+  added performance notes (~20 KB bundle) and a strict Content-Security-Policy
+  privacy note.
+- **AGENTS.md updated** — documented the webview CSP/nonce system, added
+  `src/common/nonce.ts` to the project structure, and added a "CSP blocking
+  scripts/styles" troubleshooting entry.
+- Version bumped to **0.2.3** in `package.json`.
+
 ## [0.2.2]
 
 ### Changed

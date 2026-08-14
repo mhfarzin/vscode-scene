@@ -32,7 +32,7 @@ A pure Canvas2D animated starfield featuring **200 twinkling stars** that slowly
 
 ### ✈️ SkyPilot
 
-A Pixi.js-powered sky scene featuring **procedurally generated drifting clouds** and **colorful airplanes** (Blue, Green, Red, and Yellow) flying smoothly across the screen with spinning propellers.
+A pure Canvas2D sky scene featuring **procedurally generated drifting clouds** and **colorful airplanes** (Blue, Green, Red, and Yellow) flying smoothly across the screen with spinning propellers.
 
 ### 🐠 Aquarium
 
@@ -73,7 +73,9 @@ Change the active scene from **Settings → Extensions → Scene**. The animatio
 
 ## ⚡ Performance
 
-Animations are rendered only while the Scene view is visible.
+All scenes are pure Canvas2D — no external rendering library. The webview
+bundle is tiny (~20 KB), animations pause when the view is hidden, and memory
+usage stays low.
 
 Use the **VS Code Scene: Stop** command when you do not need the animation, especially on systems with limited resources.
 
@@ -82,6 +84,9 @@ Use the **VS Code Scene: Stop** command when you do not need the animation, espe
 ## 🔒 Privacy
 
 VS Code Scene does not collect personal data, track users, or send data to external services.
+
+The webview runs under a strict **Content-Security-Policy** with per-view
+nonces, so only the extension's own scripts and styles can execute.
 
 ---
 

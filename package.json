@@ -3,7 +3,7 @@
   "displayName": "VS Code Scene",
   "description": "Beautiful relaxing animated scenes for VS Code",
   "publisher": "mh-farzin",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "license": "MIT",
   "icon": "assets/icons/icon.png",
   "keywords": [
@@ -95,6 +95,7 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
+    "build": "npx @vscode/vsce package",
     "serve:test": "node scripts/serve-test.mjs"
   },
   "devDependencies": {
