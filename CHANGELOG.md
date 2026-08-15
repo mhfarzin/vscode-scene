@@ -4,6 +4,15 @@ All notable changes to the "vscode-scene" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.0] - First stable release
+
+### Added
+- **First stable release** — the extension is now considered production-ready.
+  The features accumulated across the 0.2.x line are officially stable:
+  3 scenes (Stars, SkyPilot, Aquarium), the QuickPick scene switcher, the
+  status-bar icon, and the hardened CSP/webpack build.
+- No breaking changes from 0.2.x — this release only marks the milestone.
+
 ## [0.2.3]
 
 ### Changed

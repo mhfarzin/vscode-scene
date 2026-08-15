@@ -106,8 +106,8 @@ The extension icon combines the available scenes: a deep night sky with a glowin
 
 This extension uses assets from the following creators:
 
-* **Graphics & Icons:** Designed by [Freepik](https://www.freepik.com)
 * **Game Assets & UI Elements:** Created by [Kenney](https://kenney.nl)
+* **Graphics & Icons:** Designed by [Freepik](https://www.freepik.com)
 
 ---
 
