@@ -6,3 +6,5 @@ node_modules
 .vscode/*
 !.vscode/launch.json
 !.vscode/tasks.json
+agents.md
+scripts/
