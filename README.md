@@ -26,10 +26,6 @@ Whether you're coding, taking a short break, or simply want a more enjoyable wor
 
 ## ✨ Features
 
-### 🌟 Stars
-
-A pure Canvas2D animated starfield featuring **200 twinkling stars** that slowly drift upward, each with its own unique brightness pattern.
-
 ### ✈️ SkyPilot
 
 A pure Canvas2D sky scene featuring **procedurally generated drifting clouds** and **colorful airplanes** (Blue, Green, Red, and Yellow) flying smoothly across the screen with spinning propellers.
@@ -37,6 +33,10 @@ A pure Canvas2D sky scene featuring **procedurally generated drifting clouds** a
 ### 🐠 Aquarium
 
 A pure Canvas2D fish tank featuring **6 cartoon fish** (one of each sprite type) swimming around with **animated wagging tails**, bubbles blown from each fish's mouth, a tiled background, and gentle shimmering caustics.
+
+### 🌟 Stars
+
+A pure Canvas2D animated starfield featuring **115 twinkling stars** (90 tiny background stars + 25 vivid five-pointed stars) that slowly drift upward, each with its own unique brightness pattern.
 
 ---
 
@@ -74,8 +74,8 @@ Change the active scene from **Settings → Extensions → Scene**. The animatio
 ## ⚡ Performance
 
 All scenes are pure Canvas2D — no external rendering library. The webview
-bundle is tiny (~20 KB), animations pause when the view is hidden, and memory
-usage stays low.
+bundle is tiny (~25 KB gzipped), animations pause when the view is hidden,
+and memory usage stays low.
 
 Use the **VS Code Scene: Stop** command when you do not need the animation, especially on systems with limited resources.
 
