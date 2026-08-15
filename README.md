@@ -1,10 +1,24 @@
 # VS Code Scene ✨
 
+[![Install from VS Code Marketplace](https://img.shields.io/badge/VS%20Code-Install-blue?logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=mh-farzin.vscode-scene)
+
 Bring beautiful animated scenes to your VS Code Explorer sidebar.
 
 Transform your editor into a relaxing, living workspace with smooth animated scenes. Watch twinkling stars drift across a peaceful night sky, enjoy colorful airplanes gliding through soft clouds, or relax with cute cartoon fish swimming in a bubbling aquarium—all without leaving VS Code.
 
 Whether you're coding, taking a short break, or simply want a more enjoyable workspace, VS Code Scene adds subtle motion to your Explorer sidebar.
+
+---
+
+## 📦 Installation
+
+Open VS Code → Extensions (`Ctrl+Shift+X`) → search **VS Code Scene** → Install
+
+Or run:
+
+```bash
+ext install mh-farzin.vscode-scene
+```
 
 ---
 
@@ -14,13 +28,13 @@ Whether you're coding, taking a short break, or simply want a more enjoyable wor
 
 ![SkyPilot Demo](https://codeberg.org/mhfarzin/assets/raw/branch/main/vscode-scene/sky-pilot.gif)
 
-### 🌟 Stars
-
-![Stars Demo](https://codeberg.org/mhfarzin/assets/raw/branch/main/vscode-scene/stars.gif)
-
 ### 🐠 Aquarium
 
 ![Aquarium Demo](https://codeberg.org/mhfarzin/assets/raw/branch/main/vscode-scene/aquarium.gif)
+
+### 🌟 Stars
+
+![Stars Demo](https://codeberg.org/mhfarzin/assets/raw/branch/main/vscode-scene/stars.gif)
 
 ---
 
@@ -46,8 +60,7 @@ A pure Canvas2D animated starfield featuring **115 twinkling stars** (90 tiny ba
 2. Locate the **Scene** panel at the bottom of the Explorer.
 3. Enjoy the animation—it starts automatically.
 
-You can also use the Command Palette (`Ctrl+Shift+P`), or click the
-**color-wheel icon** in the bottom status bar:
+You can also use the Command Palette (`Ctrl+Shift+P`), or click the **color-wheel icon** in the bottom status bar:
 
 | Command | Description |
 |---|---|
@@ -60,7 +73,7 @@ You can also use the Command Palette (`Ctrl+Shift+P`), or click the
 
 ## ⚙️ Settings
 
-This extension contributes the following setting:
+This extension contributes the following settings:
 
 | Setting | Description | Default |
 |---|---|---|
@@ -73,9 +86,7 @@ Change the active scene from **Settings → Extensions → Scene**. The animatio
 
 ## ⚡ Performance
 
-All scenes are pure Canvas2D — no external rendering library. The webview
-bundle is tiny (~25 KB gzipped), animations pause when the view is hidden,
-and memory usage stays low.
+All scenes are pure Canvas2D — no external rendering library. The webview bundle is tiny (~25 KB gzipped), animations pause when the view is hidden, and memory usage stays low.
 
 Use the **VS Code Scene: Stop** command when you do not need the animation, especially on systems with limited resources.
 
@@ -85,8 +96,7 @@ Use the **VS Code Scene: Stop** command when you do not need the animation, espe
 
 VS Code Scene does not collect personal data, track users, or send data to external services.
 
-The webview runs under a strict **Content-Security-Policy** with per-view
-nonces, so only the extension's own scripts and styles can execute.
+The webview runs under a strict **Content-Security-Policy** with per-view nonces, so only the extension's own scripts and styles can execute.
 
 ---
 
@@ -98,7 +108,7 @@ No additional dependencies or configuration are required.
 
 ## 🎨 Icon
 
-The extension icon combines the available scenes: a deep night sky with a glowing moon and stars alongside a tiny airplane flying across the horizon.
+The extension icon represents the available scenes — a peaceful night sky with stars and a small airplane, capturing the calm atmosphere of the animations.
 
 ---
 
@@ -117,13 +127,14 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-## 🐛 Issues & Feedback
+## 🔗 Links
 
-Found a bug or have an idea for a new scene?
-
-Open an issue on GitHub:
-https://github.com/mhfarzin/vscode-scene/issues
+- **Marketplace:** [mh-farzin.vscode-scene](https://marketplace.visualstudio.com/items?itemName=mh-farzin.vscode-scene)
+- **Repository:** https://github.com/mhfarzin/vscode-scene
+- **Issues & Feedback:** https://github.com/mhfarzin/vscode-scene/issues
 
 ---
+
+If you enjoy the extension, a ⭐ on GitHub or a review on the Marketplace would mean a lot!
 
 Enjoy your scenes! ✨
